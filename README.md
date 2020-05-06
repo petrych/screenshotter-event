@@ -1,5 +1,5 @@
 # About
-Application makes websites screenshots and stores them in a dedicated directory which is located in the root directory.
+A RESTful webservice that makes websites screenshots and stores them.
 
 ### Technology stack
 
