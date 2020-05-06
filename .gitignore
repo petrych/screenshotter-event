@@ -1,0 +1,14 @@
+# output
+target/
+*.log*
+
+# IntelliJ IDEA
+/.idea
+.idea
+*.iws
+*.iml
+*.ipr
+
+# System Files
+.DS_Store
+Thumbs.db
