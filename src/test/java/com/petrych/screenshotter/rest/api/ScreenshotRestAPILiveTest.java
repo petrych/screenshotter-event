@@ -1,9 +1,9 @@
 package com.petrych.screenshotter.rest.api;
 
-import com.petrych.screenshotter.web.dto.ScreenshotDto;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
@@ -31,7 +31,9 @@ public class ScreenshotRestAPILiveTest {
 		      .exchange()
 		      .expectStatus()
 		      .isOk()
-		      .expectBody(ScreenshotDto[].class);
+		      .expectBody()
+		      .jsonPath("$[0]")
+		      .value(containsStringIgnoringCase("/google-com.png"));
 	}
 	
 	@Test
@@ -39,12 +41,10 @@ public class ScreenshotRestAPILiveTest {
 		
 		client.get()
 		      .uri("1")
+		      .accept(MediaType.IMAGE_PNG)
 		      .exchange()
 		      .expectStatus()
-		      .isOk()
-		      .expectBody()
-		      .jsonPath("$.id")
-		      .isEqualTo(1);
+		      .isOk();
 	}
 	
 	@Test

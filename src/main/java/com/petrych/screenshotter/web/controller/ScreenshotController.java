@@ -3,19 +3,31 @@ package com.petrych.screenshotter.web.controller;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.service.IScreenshotService;
 import com.petrych.screenshotter.web.dto.ScreenshotDto;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/screenshots")
 public class ScreenshotController {
 	
+	@Autowired
 	private IScreenshotService screenshotService;
 	
 	public ScreenshotController(IScreenshotService screenshotService) {
@@ -24,22 +36,19 @@ public class ScreenshotController {
 	}
 	
 	@GetMapping
-	public Collection<ScreenshotDto> findAll() {
+	public Collection<String> findAll() {
 		
-		Iterable<Screenshot> allScreenshots = screenshotService.findAll();
-		List<ScreenshotDto> screenshotDtos = new ArrayList<>();
-		allScreenshots.forEach(p -> screenshotDtos.add(convertToDto(p)));
-		
-		return screenshotDtos;
+		return screenshotService.loadAllFiles()
+		                        .map(this::convertFilePathToUriString)
+		                        .collect(Collectors.toList());
 	}
 	
-	@GetMapping(value = "/{id}")
-	public ScreenshotDto findById(@PathVariable Long id) {
+	@GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
+	public @ResponseBody byte[] findById(@PathVariable Long id) throws IOException {
 		
-		Screenshot entity = screenshotService.findById(id)
-		                                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		File file = screenshotService.getScreenshotFileById(id);
 		
-		return convertToDto(entity);
+		return convertFileToBytes(file);
 	}
 	
 	@GetMapping("/by-name")
@@ -50,6 +59,26 @@ public class ScreenshotController {
 		allScreenshots.forEach(p -> screenshotDtos.add(convertToDto(p)));
 		
 		return screenshotDtos;
+	}
+	
+	
+	private String convertFilePathToUriString(Path path) {
+		
+		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(this.getClass()).path("/");
+		
+		return builder.path(path.getFileName().toString())
+		              .build().toUriString();
+	}
+	
+	
+	private byte[] convertFileToBytes(File file) throws IOException {
+		
+		if (file == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		InputStream in = new FileInputStream(file.getPath());
+		
+		return IOUtils.toByteArray(in);
 	}
 	
 	private ScreenshotDto convertToDto(Screenshot entity) {
