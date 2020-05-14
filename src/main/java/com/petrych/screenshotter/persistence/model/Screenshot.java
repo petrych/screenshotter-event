@@ -16,6 +16,8 @@ public class Screenshot {
 	
 	private String name;
 	
+	private String uri;
+	
 	private LocalDate dateCreated;
 	
 	protected Screenshot() {
@@ -25,13 +27,15 @@ public class Screenshot {
 	public Screenshot(String name) {
 		
 		this.name = name;
+		this.uri = "";
 		this.dateCreated = LocalDate.now();
 	}
 	
-	public Screenshot(Long id, String name, LocalDate dateCreated) {
+	public Screenshot(Long id, String name, String uri, LocalDate dateCreated) {
 		
 		this.id = id;
 		this.name = name;
+		this.uri = uri;
 		this.dateCreated = dateCreated;
 	}
 	
@@ -55,6 +59,16 @@ public class Screenshot {
 		this.name = name;
 	}
 	
+	public String getUri() {
+		
+		return uri;
+	}
+	
+	public void setUri(String uri) {
+		
+		this.uri = uri;
+	}
+	
 	public LocalDate getDateCreated() {
 		
 		return dateCreated;
@@ -74,13 +88,14 @@ public class Screenshot {
 		
 		return id.equals(that.id) &&
 				name.equals(that.name) &&
+				uri.equals(that.uri) &&
 				dateCreated.equals(that.dateCreated);
 	}
 	
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(id, name, dateCreated);
+		return Objects.hash(id, name, uri, dateCreated);
 	}
 	
 	@Override
@@ -89,6 +104,7 @@ public class Screenshot {
 		return "Screenshot [" +
 				"id=" + id +
 				", name='" + name + '\'' +
+				", uri='" + uri + '\'' +
 				", dateCreated=" + dateCreated +
 				']';
 	}

@@ -8,23 +8,27 @@ public class ScreenshotDto {
 	
 	private String name;
 	
+	private String uri;
+	
 	private LocalDate dateCreated;
 	
 	public ScreenshotDto() {
 	
 	}
 	
-	public ScreenshotDto(Long id, String name) {
+	public ScreenshotDto(Long id, String name, String uri) {
 		
 		this(id,
 		     name,
+		     uri,
 		     LocalDate.now());
 	}
 	
-	public ScreenshotDto(Long id, String name, LocalDate dateCreated) {
+	public ScreenshotDto(Long id, String name, String uri, LocalDate dateCreated) {
 		
 		this.id = id;
 		this.name = name;
+		this.uri = uri;
 		this.dateCreated = dateCreated;
 	}
 	
@@ -47,6 +51,16 @@ public class ScreenshotDto {
 	public void setName(String name) {
 		
 		this.name = name;
+	}
+	
+	public String getUri() {
+		
+		return uri;
+	}
+	
+	public void setUri(String uri) {
+		
+		this.uri = uri;
 	}
 	
 	public LocalDate getDateCreated() {

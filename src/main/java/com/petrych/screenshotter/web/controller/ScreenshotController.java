@@ -83,7 +83,7 @@ public class ScreenshotController {
 	
 	private ScreenshotDto convertToDto(Screenshot entity) {
 		
-		return new ScreenshotDto(entity.getId(), entity.getName(), entity.getDateCreated());
+		return new ScreenshotDto(entity.getId(), entity.getName(), entity.getUri(), entity.getDateCreated());
 	}
 	
 	private Screenshot convertToEntity(ScreenshotDto dto) {
@@ -92,6 +92,10 @@ public class ScreenshotController {
 		
 		if (!StringUtils.isEmpty(dto.getId())) {
 			screenshot.setId(dto.getId());
+		}
+		
+		if (!StringUtils.isEmpty(dto.getUri())) {
+			screenshot.setUri(dto.getUri());
 		}
 		
 		if (!StringUtils.isEmpty(dto.getDateCreated())) {
