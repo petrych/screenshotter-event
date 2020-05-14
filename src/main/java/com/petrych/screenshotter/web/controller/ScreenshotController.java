@@ -10,18 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/screenshots")
@@ -36,11 +32,13 @@ public class ScreenshotController {
 	}
 	
 	@GetMapping
-	public Collection<String> findAll() {
+	public Collection<ScreenshotDto> findAll() {
 		
-		return screenshotService.loadAllFiles()
-		                        .map(this::convertFilePathToUriString)
-		                        .collect(Collectors.toList());
+		Iterable<Screenshot> allScreenshots = screenshotService.findAll();
+		List<ScreenshotDto> screenshotDtos = new ArrayList<>();
+		allScreenshots.forEach(p -> screenshotDtos.add(convertToDto(p)));
+		
+		return screenshotDtos;
 	}
 	
 	@GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
@@ -60,16 +58,6 @@ public class ScreenshotController {
 		
 		return screenshotDtos;
 	}
-	
-	
-	private String convertFilePathToUriString(Path path) {
-		
-		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(this.getClass()).path("/");
-		
-		return builder.path(path.getFileName().toString())
-		              .build().toUriString();
-	}
-	
 	
 	private byte[] convertFileToBytes(File file) throws IOException {
 		

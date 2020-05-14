@@ -4,9 +4,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.JsonPathAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 public class ScreenshotRestAPILiveTest {
@@ -27,13 +28,21 @@ public class ScreenshotRestAPILiveTest {
 	@Test
 	public void givenScreenshotsExist_whenfindAll_thenSuccess() {
 		
-		client.get()
-		      .exchange()
-		      .expectStatus()
-		      .isOk()
-		      .expectBody()
-		      .jsonPath("$[0]")
-		      .value(containsStringIgnoringCase("/google-com.png"));
+		WebTestClient.BodyContentSpec bodyContentSpec =
+				client.get()
+				      .exchange()
+				      .expectStatus()
+				      .isOk()
+				      .expectBody();
+		
+		bodyContentSpec
+				.jsonPath("$")
+				.isArray();
+		
+		JsonPathAssertions jsonPath = bodyContentSpec.jsonPath("$.[0].uri");
+		
+		jsonPath.value(startsWithIgnoringCase(BASE_URL));
+		jsonPath.value(endsWithIgnoringCase("com.png"));
 	}
 	
 	@Test
@@ -50,18 +59,26 @@ public class ScreenshotRestAPILiveTest {
 	@Test
 	public void givenScreenshotExists_whenfindByName_thenSuccess() {
 		
-		client.get()
-		      .uri(uriBuilder -> uriBuilder
-				      .path("/by-name/")
-				      .queryParam("name",
-				                  "goo")
-				      .build())
-		      .exchange()
-		      .expectStatus()
-		      .isOk()
-		      .expectBody()
-		      .jsonPath("$[0].name")
-		      .value(containsStringIgnoringCase("goo"));
+		WebTestClient.BodyContentSpec bodyContentSpec =
+				client.get()
+				      .uri(uriBuilder -> uriBuilder
+						      .path("/by-name/")
+						      .queryParam("name",
+						                  "goo")
+						      .build())
+				      .exchange()
+				      .expectStatus()
+				      .isOk()
+				      .expectBody();
+		
+		bodyContentSpec
+				.jsonPath("$")
+				.isArray();
+		
+		JsonPathAssertions jsonPath = bodyContentSpec.jsonPath("$[0].name");
+		
+		jsonPath.value(containsStringIgnoringCase("goo"));
+		jsonPath.value(endsWithIgnoringCase("com.png"));
 	}
 	
 }

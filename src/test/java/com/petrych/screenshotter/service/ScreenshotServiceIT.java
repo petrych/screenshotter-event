@@ -10,9 +10,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 public class ScreenshotServiceIT {
@@ -25,7 +24,8 @@ public class ScreenshotServiceIT {
 		
 		ArrayList<Screenshot> screenshots = (ArrayList<Screenshot>) screenshotService.findAll();
 		
-		assertThat(screenshots, is(notNullValue()));
+		assertTrue(screenshots.size() > 0);
+		assertTrue(screenshots.get(0).getUri().contains(".png"));
 	}
 	
 	@Test
@@ -42,6 +42,7 @@ public class ScreenshotServiceIT {
 		ArrayList<Screenshot> screenshots = (ArrayList<Screenshot>) screenshotService.findByName("screen");
 		
 		assertTrue(screenshots.get(0).getName().contains("screen"));
+		assertTrue(screenshots.get(0).getUri().contains(".png"));
 	}
 	
 	@Test
