@@ -63,7 +63,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		if (entity.isPresent()) {
 			String screenshotName = entity.get().getName();
-			boolean fileExists = fileExists(getStorageDir(), screenshotName);
+			boolean fileExists = Files.exists(Paths.get(getStorageDir(), screenshotName));
 			
 			if (fileExists) {
 				return new File(getStorageDir() + File.separatorChar + screenshotName);
@@ -93,29 +93,6 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	public String store(String urlString) {
 		
 		return new ScreenshotMaker(getStorageDir()).createFromUrl(urlString);
-	}
-	
-	
-	private static boolean fileExists(String dirName, String fileName) {
-		
-		File[] dirContent = getDirContent(dirName);
-		for (File file : dirContent) {
-			if (file.getName().contains(fileName)) {
-				return true;
-			}
-		}
-		LOG.debug("File '{}' does not exist in the directory '{}'.", fileName, dirName);
-		
-		return false;
-	}
-	
-	private static File[] getDirContent(String dirName) {
-		
-		File dir = new File(dirName);
-		File[] dirContent = dir.listFiles();
-		LOG.debug("Successfully retrieved the list of files in the directory '{}'.", dirName);
-		
-		return dirContent;
 	}
 	
 	private String getStorageDir() {
