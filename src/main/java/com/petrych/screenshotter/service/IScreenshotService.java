@@ -19,4 +19,6 @@ public interface IScreenshotService {
 	
 	Stream<Path> loadAllFiles();
 	
+	String store(String urlString);
+	
 }

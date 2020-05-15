@@ -5,6 +5,7 @@ import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
 import com.petrych.screenshotter.service.IScreenshotService;
+import com.petrych.screenshotter.service.ScreenshotMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,12 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			throw new StorageException("Failed to read stored files", e);
 		}
 		
+	}
+	
+	@Override
+	public String store(String urlString) {
+		
+		return new ScreenshotMaker(getStorageDir()).createFromUrl(urlString);
 	}
 	
 	

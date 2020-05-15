@@ -8,8 +8,13 @@ A RESTful webservice that makes websites screenshots and stores them.
 - Spring 5
 - Spring Boot 2
 - JPA, Hibernate (im-memory DB with some predefined data)
+- Chrome Driver for Selenium (*)
 - JUnit 5
 - Spring WebTestClient
+
+(*) The version of Chrome Driver must correspond to the Chrome browser installed.
+chromedriver executable needs to be in the project folder.
+Download from https://sites.google.com/a/chromium.org/chromedriver/downloads.
 
 # 1. Build
 
