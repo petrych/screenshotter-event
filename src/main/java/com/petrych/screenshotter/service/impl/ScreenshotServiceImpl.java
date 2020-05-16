@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 @Service
 class ScreenshotServiceImpl implements IScreenshotService {
 	
-	private final Path rootLocation;
+	private final Path storageLocation;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotServiceImpl.class);
 	
@@ -38,14 +38,18 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	public ScreenshotServiceImpl(IScreenshotRepository screenshotRepo, StorageProperties properties) {
 		
 		this.screenshotRepo = screenshotRepo;
-		this.rootLocation = Paths.get(properties.getLocation());
+		this.storageLocation = Paths.get(properties.getLocation());
 	}
+	
+	// find - all
 	
 	@Override
 	public Iterable<Screenshot> findAll() {
 		
 		return screenshotRepo.findAll();
 	}
+	
+	// find - one
 	
 	@Override
 	public Optional<Screenshot> findById(Long id) {
@@ -66,10 +70,10 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		if (entity.isPresent()) {
 			String screenshotName = entity.get().getName();
-			boolean fileExists = Files.exists(Paths.get(getStorageDir(), screenshotName));
+			boolean fileExists = Files.exists(Paths.get(getStorageLocation(), screenshotName));
 			
 			if (fileExists) {
-				return new File(getStorageDir() + File.separatorChar + screenshotName);
+				return new File(getStorageLocation() + File.separatorChar + screenshotName);
 			} else {
 				LOG.debug("Screenshot file not found with id={} and name '{}'.", id, screenshotName);
 			}
@@ -78,24 +82,27 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		return null;
 	}
 	
+	// other
 	
 	@Override
 	public Stream<Path> loadAllFiles() {
 		
 		try {
-			return Files.walk(this.rootLocation, 1)
-			            .filter(path -> !path.equals(this.rootLocation))
-			            .map(this.rootLocation::relativize);
+			return Files.walk(this.storageLocation, 1)
+			            .filter(path -> !path.equals(this.storageLocation))
+			            .map(this.storageLocation::relativize);
 		} catch (IOException e) {
 			throw new StorageException("Failed to read stored files", e);
 		}
 		
 	}
 	
+	// store
+	
 	@Override
-	public String store(String urlString) {
+	public String storeFile(String urlString) {
 		
-		String fileName = new ScreenshotMaker(getStorageDir()).createFromUrl(urlString);
+		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 		
 		Screenshot screenshot = new Screenshot(fileName, buildUriForFileName(fileName));
 		screenshotRepo.save(screenshot);
@@ -103,9 +110,11 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		return fileName;
 	}
 	
-	private String getStorageDir() {
+	// helper methods
+	
+	private String getStorageLocation() {
 		
-		return rootLocation.toString();
+		return storageLocation.toString();
 	}
 	
 	private String buildUriForFileName(String fileName) {

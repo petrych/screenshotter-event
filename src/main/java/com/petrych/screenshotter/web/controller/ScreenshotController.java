@@ -31,6 +31,8 @@ public class ScreenshotController {
 		this.screenshotService = screenshotService;
 	}
 	
+	// find - all
+	
 	@GetMapping
 	public Collection<ScreenshotDto> findAll() {
 		
@@ -40,6 +42,8 @@ public class ScreenshotController {
 		
 		return screenshotDtos;
 	}
+	
+	// find - one
 	
 	@GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
 	public @ResponseBody byte[] findById(@PathVariable Long id) throws IOException {
@@ -59,12 +63,16 @@ public class ScreenshotController {
 		return screenshotDtos;
 	}
 	
+	// create
+	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public void store(@RequestBody String urlString) {
 		
-		screenshotService.store(urlString);
+		screenshotService.storeFile(urlString);
 	}
+	
+	// helper methods
 	
 	private byte[] convertFileToBytes(File file) throws IOException {
 		

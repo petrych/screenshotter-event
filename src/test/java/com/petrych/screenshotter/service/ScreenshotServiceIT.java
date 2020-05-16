@@ -74,7 +74,7 @@ public class ScreenshotServiceIT {
 	@Test
 	void givenValidUrl_whenStore_thenSuccess() throws IOException {
 		
-		String fileName = screenshotService.store(URL_VALID);
+		String fileName = screenshotService.storeFile(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);
 		
 		assertFalse(fileName.isEmpty());
