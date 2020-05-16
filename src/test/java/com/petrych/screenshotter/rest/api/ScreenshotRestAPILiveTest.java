@@ -3,9 +3,12 @@ package com.petrych.screenshotter.rest.api;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.JsonPathAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.Duration;
 
 import static org.hamcrest.Matchers.*;
 
@@ -79,6 +82,32 @@ public class ScreenshotRestAPILiveTest {
 		
 		jsonPath.value(containsStringIgnoringCase("goo"));
 		jsonPath.value(endsWithIgnoringCase("com.png"));
+	}
+	
+	@Test
+	public void givenValidUrl_whenStore_thenSuccess() {
+		
+		client.mutate()
+		      .responseTimeout(Duration.ofMillis(30000))
+		      .build()
+		      .post()
+		      .bodyValue("https://www.apple.com/")
+		      .exchange()
+		      .expectStatus()
+		      .isEqualTo(HttpStatus.CREATED);
+		
+		client.get()
+		      .uri(uriBuilder -> uriBuilder
+				      .path("/by-name/")
+				      .queryParam("name",
+				                  "apple")
+				      .build())
+		      .exchange()
+		      .expectStatus()
+		      .isOk()
+		      .expectBody()
+		      .jsonPath("$[0].name")
+		      .value(containsStringIgnoringCase("apple"));
 	}
 	
 }

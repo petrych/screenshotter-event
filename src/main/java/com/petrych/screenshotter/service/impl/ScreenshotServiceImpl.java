@@ -6,10 +6,13 @@ import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
 import com.petrych.screenshotter.service.IScreenshotService;
 import com.petrych.screenshotter.service.ScreenshotMaker;
+import com.petrych.screenshotter.web.controller.ScreenshotController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,12 +95,26 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	@Override
 	public String store(String urlString) {
 		
-		return new ScreenshotMaker(getStorageDir()).createFromUrl(urlString);
+		String fileName = new ScreenshotMaker(getStorageDir()).createFromUrl(urlString);
+		
+		Screenshot screenshot = new Screenshot(fileName, buildUriForFileName(fileName));
+		screenshotRepo.save(screenshot);
+		
+		return fileName;
 	}
 	
 	private String getStorageDir() {
 		
 		return rootLocation.toString();
+	}
+	
+	private String buildUriForFileName(String fileName) {
+		
+		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(ScreenshotController.class);
+		
+		return builder.path("/" + fileName)
+		              .build()
+		              .toUriString();
 	}
 	
 }

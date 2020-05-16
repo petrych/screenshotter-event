@@ -59,6 +59,13 @@ public class ScreenshotController {
 		return screenshotDtos;
 	}
 	
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public void store(@RequestBody String urlString) {
+		
+		screenshotService.store(urlString);
+	}
+	
 	private byte[] convertFileToBytes(File file) throws IOException {
 		
 		if (file == null) {
@@ -76,7 +83,7 @@ public class ScreenshotController {
 	
 	private Screenshot convertToEntity(ScreenshotDto dto) {
 		
-		Screenshot screenshot = new Screenshot(dto.getName());
+		Screenshot screenshot = new Screenshot(dto.getName(), dto.getUri());
 		
 		if (!StringUtils.isEmpty(dto.getId())) {
 			screenshot.setId(dto.getId());

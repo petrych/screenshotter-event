@@ -24,10 +24,10 @@ public class Screenshot {
 	
 	}
 	
-	public Screenshot(String name) {
+	public Screenshot(String name, String uri) {
 		
 		this.name = name;
-		this.uri = "";
+		this.uri = uri;
 		this.dateCreated = LocalDate.now();
 	}
 	
