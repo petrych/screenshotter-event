@@ -25,6 +25,7 @@ public class ScreenshotRestAPILiveTest {
 		client = WebTestClient
 				.bindToServer()
 				.baseUrl(BASE_URL)
+				.responseTimeout(Duration.ofMillis(30000))
 				.build();
 	}
 	
