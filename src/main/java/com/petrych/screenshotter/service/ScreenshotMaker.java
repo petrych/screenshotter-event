@@ -49,7 +49,7 @@ public class ScreenshotMaker {
 		return fileName;
 	}
 	
-	private static String createFileName(String urlString) {
+	public static String createFileName(String urlString) {
 		
 		return parseUrlString(urlString).concat(getFileExt());
 	}

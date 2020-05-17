@@ -21,4 +21,8 @@ public interface IScreenshotService {
 	
 	String storeFile(String urlString);
 	
+	void update(String urlString);
+	
+	String findFileNameByUrl(String urlString);
+	
 }

@@ -72,6 +72,15 @@ public class ScreenshotController {
 		screenshotService.storeFile(urlString);
 	}
 	
+	// update
+	
+	@PutMapping
+	@ResponseStatus(HttpStatus.OK)
+	public void update(@RequestBody String urlString) {
+		
+		screenshotService.update(urlString);
+	}
+	
 	// helper methods
 	
 	private byte[] convertFileToBytes(File file) throws IOException {

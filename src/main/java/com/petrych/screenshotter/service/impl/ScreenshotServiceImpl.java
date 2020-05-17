@@ -19,7 +19,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -110,6 +114,44 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		return fileName;
 	}
 	
+	// update
+	
+	@Override
+	public void update(String urlString) {
+		
+		String fileNameToSearchFor = findFileNameByUrl(urlString);
+		
+		if (fileNameToSearchFor.isEmpty()) {
+			// create if doesn't exist
+			this.storeFile(urlString);
+			
+		} else {
+			// update if exists
+			new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
+			
+			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
+					.findByNameContaining(fileNameToSearchFor)).get(0);
+			screenshot.setDateCreated(LocalDate.now());
+			
+			screenshotRepo.save(screenshot);
+		}
+	}
+	
+	@Override
+	public String findFileNameByUrl(String urlString) {
+		
+		for (String uri : findAllScreenshotUris()) {
+			String fileNameToSearchFor = ScreenshotMaker.createFileName(urlString);
+			
+			if (uri.endsWith(fileNameToSearchFor)) {
+				
+				return fileNameToSearchFor;
+			}
+		}
+		
+		return "";
+	}
+	
 	// helper methods
 	
 	private String getStorageLocation() {
@@ -124,6 +166,21 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		return builder.path("/" + fileName)
 		              .build()
 		              .toUriString();
+	}
+	
+	private Collection<String> findAllScreenshotUris() {
+		
+		return this.loadAllFiles()
+		           .map(this::convertFilePathToUriString)
+		           .collect(Collectors.toList());
+	}
+	
+	private String convertFilePathToUriString(Path path) {
+		
+		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(this.getClass()).path("/");
+		
+		return builder.path(path.getFileName().toString())
+		              .build().toUriString();
 	}
 	
 }

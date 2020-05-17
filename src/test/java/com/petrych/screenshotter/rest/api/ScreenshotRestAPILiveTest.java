@@ -111,4 +111,62 @@ public class ScreenshotRestAPILiveTest {
 		      .value(containsStringIgnoringCase("apple"));
 	}
 	
+	@Test
+	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() {
+		
+		client.get()
+		      .uri(uriBuilder -> uriBuilder
+				      .path("/by-name/")
+				      .queryParam("name",
+				                  "google")
+				      .build())
+		      .exchange()
+		      .expectStatus()
+		      .isOk()
+		      .expectBody()
+		      .jsonPath("$[0].name")
+		      .value(containsStringIgnoringCase("google"));
+		
+		client.put()
+		      .bodyValue("https://www.google.com/")
+		      .exchange()
+		      .expectStatus()
+		      .isOk();
+	}
+	
+	@Test
+	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() {
+		
+		client.get()
+		      .uri(uriBuilder -> uriBuilder
+				      .path("/by-name/")
+				      .queryParam("name",
+				                  "gmail")
+				      .build())
+		      .exchange()
+		      .expectStatus()
+		      .isOk()
+		      .expectBody()
+		      .json("[]");
+		
+		client.put()
+		      .bodyValue("https://www.gmail.com/")
+		      .exchange()
+		      .expectStatus()
+		      .isOk();
+		
+		client.get()
+		      .uri(uriBuilder -> uriBuilder
+				      .path("/by-name/")
+				      .queryParam("name",
+				                  "gmail")
+				      .build())
+		      .exchange()
+		      .expectStatus()
+		      .isOk()
+		      .expectBody()
+		      .jsonPath("$[0].name")
+		      .value(containsStringIgnoringCase("gmail"));
+	}
+	
 }

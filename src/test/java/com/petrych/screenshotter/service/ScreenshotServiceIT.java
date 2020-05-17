@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -28,6 +29,8 @@ public class ScreenshotServiceIT {
 	private String storageDir;
 	
 	private static final String URL_VALID = "https://www.apple.com/";
+	
+	private static final String URL_EXISTS = "https://www.screenshot-1.com/";
 	
 	@Test
 	public void givenScreenshotsExist_whenfindAll_thenSuccess() {
@@ -78,6 +81,56 @@ public class ScreenshotServiceIT {
 		Path filePath = Paths.get(storageDir, fileName);
 		
 		assertFalse(fileName.isEmpty());
+		assertTrue(Files.exists(filePath));
+		
+		// Clean up after the test
+		Files.delete(filePath);
+		assertFalse(Files.exists(Paths.get(storageDir, fileName)));
+	}
+	
+	@Test
+	void givenScreenshotWithUrlExists_whenFindFileNameByUrl_thenSuccess() {
+		
+		String fileName = ScreenshotMaker.createFileName(URL_EXISTS);
+		Path filePath = Paths.get(storageDir, fileName);
+		
+		assertEquals(fileName, screenshotService.findFileNameByUrl(URL_EXISTS));
+		assertTrue(Files.exists(filePath));
+	}
+	
+	@Test
+	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() {
+		
+		String fileName = ScreenshotMaker.createFileName(URL_EXISTS);
+		Path filePath = Paths.get(storageDir, fileName);
+		int screenshotsTotalBefore = ((Collection<Screenshot>) screenshotService.findAll()).size();
+		Screenshot screenshotBefore = screenshotService.findById(4L).get();
+		
+		assertFalse(screenshotService.findFileNameByUrl(URL_EXISTS).isEmpty());
+		assertTrue(Files.exists(filePath));
+		
+		screenshotService.update(URL_EXISTS);
+		int screenshotsTotalAfter = ((Collection<Screenshot>) screenshotService.findAll()).size();
+		Screenshot screenshotAfter = screenshotService.findById(4L).get();
+		
+		assertTrue(Files.exists(filePath));
+		assertEquals(screenshotsTotalBefore, screenshotsTotalAfter);
+		assertEquals(screenshotBefore.getUri(), screenshotAfter.getUri());
+		assertTrue(screenshotBefore.getDateCreated().isBefore(screenshotAfter.getDateCreated()));
+	}
+	
+	@Test
+	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() throws IOException {
+		
+		String fileName = ScreenshotMaker.createFileName(URL_VALID);
+		Path filePath = Paths.get(storageDir, fileName);
+		
+		assertTrue(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertFalse(Files.exists(filePath));
+		
+		screenshotService.update(URL_VALID);
+		
+		assertEquals(fileName, screenshotService.findFileNameByUrl(URL_VALID));
 		assertTrue(Files.exists(filePath));
 		
 		// Clean up after the test
