@@ -45,8 +45,7 @@ public class ScreenshotRestAPILiveTest {
 		
 		JsonPathAssertions jsonPath = bodyContentSpec.jsonPath("$.[0].uri");
 		
-		jsonPath.value(startsWithIgnoringCase(BASE_URL));
-		jsonPath.value(endsWithIgnoringCase("com.png"));
+		jsonPath.value(matchesPattern(BASE_URL.concat("\\d+")));
 	}
 	
 	@Test
