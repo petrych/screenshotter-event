@@ -2,7 +2,6 @@ package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,13 +44,13 @@ public class ScreenshotServiceIT {
 	public void setUp() throws IOException {
 		
 		Path target = Paths.get(storageDir);
+		storageDirPath = target;
 		
 		// create folder with images for testing if it doesn't exist
 		if (!Files.exists(target)) {
 			
 			Path source = Paths.get(imagesDir);
 			copyFolder(source, target);
-			storageDirPath = target;
 		}
 		
 		assertTrue(Files.isDirectory(target));
@@ -131,21 +130,27 @@ public class ScreenshotServiceIT {
 		assertTrue(Files.exists(filePath));
 	}
 	
-	@Ignore // TODO. Fails on the last assertion
 	@Test
 	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() {
 		
 		String fileName = ScreenshotMaker.createFileName(URL_EXISTS);
 		Path filePath = Paths.get(storageDir, fileName);
 		int screenshotsTotalBefore = ((Collection<Screenshot>) screenshotService.findAll()).size();
-		Screenshot screenshotBefore = screenshotService.findById(4L).get();
+		ArrayList<Screenshot> screenshotsBeforeUpd = new ArrayList<>(
+				(Collection<? extends Screenshot>) screenshotService.findByName(fileName));
+		
+		Screenshot screenshotBefore = screenshotsBeforeUpd.get(0);
 		
 		assertFalse(screenshotService.findFileNameByUrl(URL_EXISTS).isEmpty());
 		assertTrue(Files.exists(filePath));
 		
 		screenshotService.update(URL_EXISTS);
 		int screenshotsTotalAfter = ((Collection<Screenshot>) screenshotService.findAll()).size();
-		Screenshot screenshotAfter = screenshotService.findById(4L).get();
+		
+		ArrayList<Screenshot> screenshotsAfterUpd = new ArrayList<>(
+				(Collection<? extends Screenshot>) screenshotService.findByName(fileName));
+		
+		Screenshot screenshotAfter = screenshotsAfterUpd.get(0);
 		
 		assertTrue(Files.exists(filePath));
 		assertEquals(screenshotsTotalBefore, screenshotsTotalAfter);
