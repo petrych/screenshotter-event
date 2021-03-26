@@ -66,10 +66,15 @@ public class ScreenshotMaker {
 		
 		System.setProperty("webdriver.chrome.driver", DRIVER_DIR + File.separatorChar + "chromedriver");
 		WebDriver driver = new ChromeDriver();
-		driver.get(urlString);
-		new WebDriverWait(driver, 15);
 		
-		return driver;
+		try {
+			driver.get(urlString);
+			new WebDriverWait(driver, 15);
+			
+			return driver;
+		} finally {
+			driver.quit();
+		}
 	}
 	
 	private static String getFileExt() {
