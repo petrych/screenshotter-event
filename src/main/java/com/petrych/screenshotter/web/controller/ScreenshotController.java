@@ -2,6 +2,7 @@ package com.petrych.screenshotter.web.controller;
 
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.service.IScreenshotService;
+import com.petrych.screenshotter.service.InvalidURLException;
 import com.petrych.screenshotter.web.dto.ScreenshotDto;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class ScreenshotController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void store(@RequestBody String urlString) {
+	public void store(@RequestBody String urlString) throws InvalidURLException {
 		
 		screenshotService.storeFile(urlString);
 	}
@@ -76,7 +77,7 @@ public class ScreenshotController {
 	
 	@PutMapping
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@RequestBody String urlString) {
+	public void update(@RequestBody String urlString) throws InvalidURLException {
 		
 		screenshotService.update(urlString);
 	}

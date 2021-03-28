@@ -11,6 +11,8 @@ import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class ScreenshotMaker {
 	
@@ -26,7 +28,9 @@ public class ScreenshotMaker {
 		this.storageDir = storageDir;
 	}
 	
-	public String createFromUrl(String urlString) {
+	public String createFromUrl(String urlString) throws InvalidURLException {
+		
+		isUrlValid(urlString);
 		
 		WebDriver driver = getWebDriver(urlString);
 		
@@ -42,19 +46,21 @@ public class ScreenshotMaker {
 		} catch (IOException e) {
 			String message = String.format("Could not write a file '%s'", relativeFilePath);
 			throw new StorageException(message, e);
+		} finally {
+			driver.quit();
 		}
-		
-		driver.quit();
 		
 		return fileName;
 	}
 	
-	public static String createFileName(String urlString) {
+	public static String createFileName(String urlString) throws InvalidURLException {
 		
 		return parseUrlString(urlString).concat(getFileExt());
 	}
 	
-	private static String parseUrlString(String urlString) {
+	private static String parseUrlString(String urlString) throws InvalidURLException {
+		
+		isUrlValid(urlString);
 		
 		return urlString.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "")
 		                .replaceAll("\\W|_", "-")
@@ -67,19 +73,35 @@ public class ScreenshotMaker {
 		System.setProperty("webdriver.chrome.driver", DRIVER_DIR + File.separatorChar + "chromedriver");
 		WebDriver driver = new ChromeDriver();
 		
-		try {
-			driver.get(urlString);
-			new WebDriverWait(driver, 15);
-			
-			return driver;
-		} finally {
-			driver.quit();
-		}
+		driver.get(urlString);
+		new WebDriverWait(driver, 15);
+		
+		return driver;
 	}
 	
 	private static String getFileExt() {
 		
 		return "." + IMAGE_FORMAT_NAME;
+	}
+	
+	private static boolean isUrlValid(String urlString) throws InvalidURLException {
+		
+		try {
+			URL siteURL = new URL(urlString);
+			HttpURLConnection connection = (HttpURLConnection) siteURL.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(3000);
+			connection.connect();
+			
+			if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				return true;
+			}
+			
+		} catch (IOException e) {
+			throw new InvalidURLException("Invalid URL. ", e.getCause());
+		}
+		
+		return false;
 	}
 	
 }

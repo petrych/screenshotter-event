@@ -5,6 +5,7 @@ import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
 import com.petrych.screenshotter.service.IScreenshotService;
+import com.petrych.screenshotter.service.InvalidURLException;
 import com.petrych.screenshotter.service.ScreenshotMaker;
 import com.petrych.screenshotter.web.controller.ScreenshotController;
 import org.slf4j.Logger;
@@ -104,7 +105,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	// store
 	
 	@Override
-	public String storeFile(String urlString) {
+	public String storeFile(String urlString) throws InvalidURLException {
 		
 		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 		
@@ -117,7 +118,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	// update
 	
 	@Override
-	public void update(String urlString) {
+	public void update(String urlString) throws InvalidURLException {
 		
 		String fileNameToSearchFor = findFileNameByUrl(urlString);
 		
@@ -138,7 +139,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	}
 	
 	@Override
-	public String findFileNameByUrl(String urlString) {
+	public String findFileNameByUrl(String urlString) throws InvalidURLException {
 		
 		for (String uri : findAllScreenshotUris()) {
 			String fileNameToSearchFor = ScreenshotMaker.createFileName(urlString);

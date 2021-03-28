@@ -19,10 +19,10 @@ public interface IScreenshotService {
 	
 	Stream<Path> loadAllFiles();
 	
-	String storeFile(String urlString);
+	String storeFile(String urlString) throws InvalidURLException;
 	
-	void update(String urlString);
+	void update(String urlString) throws InvalidURLException;
 	
-	String findFileNameByUrl(String urlString);
+	String findFileNameByUrl(String urlString) throws InvalidURLException;
 	
 }
