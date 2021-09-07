@@ -8,6 +8,7 @@ import com.petrych.screenshotter.service.IScreenshotService;
 import com.petrych.screenshotter.service.InvalidURLException;
 import com.petrych.screenshotter.service.ScreenshotMaker;
 import com.petrych.screenshotter.web.controller.ScreenshotController;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -139,6 +141,23 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	}
 	
 	@Override
+	public void delete(String urlString) throws InvalidURLException, IOException {
+		
+		String fileNameToSearchFor = findFileNameByUrl(urlString);
+		
+		if (fileNameToSearchFor.isEmpty()) {
+			throw new FileNotFoundException();
+		}
+		else {
+			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
+					.findByNameContaining(fileNameToSearchFor)).get(0);
+			
+			screenshotRepo.delete(screenshot);
+			this.deleteFile(fileNameToSearchFor);
+		}
+	}
+	
+	@Override
 	public String findFileNameByUrl(String urlString) throws InvalidURLException {
 		
 		for (String uri : findAllScreenshotUris()) {
@@ -182,6 +201,12 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		return builder.path(path.getFileName().toString())
 		              .build().toUriString();
+	}
+	
+	private void deleteFile(String fileName) throws IOException {
+		
+		File fileToDelete = FileUtils.getFile(getStorageLocation() + File.separatorChar + fileName);
+		FileUtils.forceDelete(fileToDelete);
 	}
 	
 }

@@ -82,6 +82,15 @@ public class ScreenshotController {
 		screenshotService.update(urlString);
 	}
 	
+	// delete
+	
+	@DeleteMapping
+	@ResponseStatus(HttpStatus.OK)
+	public void delete(@RequestBody String urlString) throws InvalidURLException, IOException {
+		
+		screenshotService.delete(urlString);
+	}
+	
 	// helper methods
 	
 	private byte[] convertFileToBytes(File file) throws IOException {

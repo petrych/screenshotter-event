@@ -3,6 +3,7 @@ package com.petrych.screenshotter.service;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -25,4 +26,5 @@ public interface IScreenshotService {
 	
 	String findFileNameByUrl(String urlString) throws InvalidURLException;
 	
+	void delete(String urlString) throws InvalidURLException, IOException;
 }

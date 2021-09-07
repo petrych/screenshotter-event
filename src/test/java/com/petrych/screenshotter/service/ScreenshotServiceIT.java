@@ -193,4 +193,31 @@ public class ScreenshotServiceIT {
 		});
 	}
 	
+	@Test
+	void givenScreenshotExists_whenDelete_thenSuccess() throws InvalidURLException, IOException {
+		
+		String fileName = screenshotService.storeFile(URL_VALID);
+		Path filePath = Paths.get(storageDir, fileName);
+		
+		assertFalse(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertTrue(Files.exists(filePath));
+		
+		screenshotService.delete(URL_VALID);
+		
+		assertTrue(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertTrue(Files.notExists(filePath));
+	}
+	
+	@Test
+	void givenFileNotExists_whenDelete_thenFileNotFoundException() throws InvalidURLException, IOException {
+		
+		String fileName = screenshotService.storeFile(URL_VALID);
+		Path filePath = Paths.get(storageDir, fileName);
+		
+		FileUtils.forceDelete(filePath.toFile());
+		
+		assertThrows(IOException.class, () -> {
+			screenshotService.delete(URL_VALID);
+		});
+	}
 }
