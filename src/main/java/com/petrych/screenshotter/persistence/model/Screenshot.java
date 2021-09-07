@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -18,7 +18,7 @@ public class Screenshot {
 	
 	private String uri;
 	
-	private LocalDate dateCreated;
+	private LocalDateTime dateTimeCreated;
 	
 	protected Screenshot() {
 	
@@ -28,15 +28,15 @@ public class Screenshot {
 		
 		this.name = name;
 		this.uri = uri;
-		this.dateCreated = LocalDate.now();
+		this.dateTimeCreated = LocalDateTime.now();
 	}
 	
-	public Screenshot(Long id, String name, String uri, LocalDate dateCreated) {
+	public Screenshot(Long id, String name, String uri, LocalDateTime dateTimeCreated) {
 		
 		this.id = id;
 		this.name = name;
 		this.uri = uri;
-		this.dateCreated = dateCreated;
+		this.dateTimeCreated = dateTimeCreated;
 	}
 	
 	public Long getId() {
@@ -69,14 +69,14 @@ public class Screenshot {
 		this.uri = uri;
 	}
 	
-	public LocalDate getDateCreated() {
+	public LocalDateTime getDateTimeCreated() {
 		
-		return dateCreated;
+		return dateTimeCreated;
 	}
 	
-	public void setDateCreated(LocalDate dateCreated) {
+	public void setDateTimeCreated(LocalDateTime dateTimeCreated) {
 		
-		this.dateCreated = dateCreated;
+		this.dateTimeCreated = dateTimeCreated;
 	}
 	
 	@Override
@@ -89,13 +89,13 @@ public class Screenshot {
 		return id.equals(that.id) &&
 				name.equals(that.name) &&
 				uri.equals(that.uri) &&
-				dateCreated.equals(that.dateCreated);
+				dateTimeCreated.equals(that.dateTimeCreated);
 	}
 	
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(id, name, uri, dateCreated);
+		return Objects.hash(id, name, uri, dateTimeCreated);
 	}
 	
 	@Override
@@ -105,7 +105,7 @@ public class Screenshot {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", uri='" + uri + '\'' +
-				", dateCreated=" + dateCreated +
+				", dateTimeCreated=" + dateTimeCreated +
 				']';
 	}
 	

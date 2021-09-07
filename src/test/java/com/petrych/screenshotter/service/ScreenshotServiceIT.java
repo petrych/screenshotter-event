@@ -158,7 +158,7 @@ public class ScreenshotServiceIT {
 		assertTrue(Files.exists(filePath));
 		assertEquals(screenshotsTotalBefore, screenshotsTotalAfter);
 		assertEquals(screenshotBefore.getUri(), screenshotAfter.getUri());
-		assertTrue(screenshotBefore.getDateCreated().isBefore(screenshotAfter.getDateCreated()));
+		assertTrue(screenshotBefore.getDateTimeCreated().isBefore(screenshotAfter.getDateTimeCreated()));
 	}
 	
 	@Test

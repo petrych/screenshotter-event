@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -134,7 +134,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
 					.findByNameContaining(fileNameToSearchFor)).get(0);
-			screenshot.setDateCreated(LocalDate.now());
+			screenshot.setDateTimeCreated(LocalDateTime.now());
 			
 			screenshotRepo.save(screenshot);
 		}

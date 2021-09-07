@@ -1,6 +1,6 @@
 package com.petrych.screenshotter.web.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ScreenshotDto {
 	
@@ -10,7 +10,7 @@ public class ScreenshotDto {
 	
 	private String uri;
 	
-	private LocalDate dateCreated;
+	private LocalDateTime dateTimeCreated;
 	
 	public ScreenshotDto() {
 	
@@ -21,15 +21,15 @@ public class ScreenshotDto {
 		this(id,
 		     name,
 		     uri,
-		     LocalDate.now());
+		     LocalDateTime.now());
 	}
 	
-	public ScreenshotDto(Long id, String name, String uri, LocalDate dateCreated) {
+	public ScreenshotDto(Long id, String name, String uri, LocalDateTime dateTimeCreated) {
 		
 		this.id = id;
 		this.name = name;
 		this.uri = uri;
-		this.dateCreated = dateCreated;
+		this.dateTimeCreated = dateTimeCreated;
 	}
 	
 	
@@ -63,14 +63,14 @@ public class ScreenshotDto {
 		this.uri = uri;
 	}
 	
-	public LocalDate getDateCreated() {
+	public LocalDateTime getDateTimeCreated() {
 		
-		return dateCreated;
+		return dateTimeCreated;
 	}
 	
-	public void setDateCreated(LocalDate dateCreated) {
+	public void setDateTimeCreated(LocalDateTime dateTimeCreated) {
 		
-		this.dateCreated = dateCreated;
+		this.dateTimeCreated = dateTimeCreated;
 	}
 	
 }
