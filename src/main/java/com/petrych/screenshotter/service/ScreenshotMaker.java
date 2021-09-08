@@ -98,7 +98,7 @@ public class ScreenshotMaker {
 			}
 			
 		} catch (IOException e) {
-			throw new InvalidURLException("Invalid URL. ", e.getCause());
+			throw new InvalidURLException("Invalid URL", e.getCause());
 		}
 		
 		return false;
