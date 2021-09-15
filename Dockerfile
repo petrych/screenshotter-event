@@ -7,6 +7,9 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 COPY src ./src
+COPY storage ./storage
+COPY test-images ./test-images
+COPY tools ./tools
 
 RUN ./mvnw clean package
 
