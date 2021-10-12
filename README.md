@@ -14,7 +14,7 @@ A RESTful webservice that makes websites screenshots and stores them.
 
 (*) The version of Chrome Driver must correspond to the Chrome browser installed.
 chromedriver executable needs to be in the /tools directory.
-Download from https://sites.google.com/a/chromium.org/chromedriver/downloads.
+Download from https://sites.google.com/chromium.org/driver/downloads.
 
 # 1. Build
 
