@@ -1,8 +1,10 @@
 package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.persistence.StorageException;
+import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
@@ -17,9 +19,15 @@ import java.net.URL;
 public class ScreenshotMaker {
 	
 	// Directory with Chromedriver
-	private static final String DRIVER_DIR = "tools";
+	private static final String CHROMEDRIVER_BIN_LOCATION_APP = "tools";
 	
 	private static final String IMAGE_FORMAT_NAME = "png";
+	
+	public static final String CHROMEDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
+	
+	public static final String CHROMEDRIVER_BIN_LOCATION_LINUX = "/usr/bin";
+	
+	public static final String CHROMEDRIVER_BIN_NAME = "chromedriver";
 	
 	private String storageDir;
 	
@@ -70,13 +78,38 @@ public class ScreenshotMaker {
 	
 	private static WebDriver getWebDriver(String urlString) {
 		
-		System.setProperty("webdriver.chrome.driver", DRIVER_DIR + File.separatorChar + "chromedriver");
-		WebDriver driver = new ChromeDriver();
+		setChromeDriverBinaryLocation();
+		
+		System.setProperty("webdriver.chrome.whitelistedIps", "172.17.0.2, 172.17.0.3");
+		
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--no-sandbox"); // Bypass OS security model
+		options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+		options.addArguments("--headless");
+		options.addArguments("--start-maximized");
+		options.addArguments("--disable-infobars");
+		options.addArguments("--disable-extensions");
+		options.addArguments("--verbose");
+		
+		WebDriver driver = new ChromeDriver(options);
 		
 		driver.get(urlString);
 		new WebDriverWait(driver, 15);
 		
 		return driver;
+	}
+	
+	private static void setChromeDriverBinaryLocation() {
+		
+		String binLocation = CHROMEDRIVER_BIN_LOCATION_APP + File.separatorChar + CHROMEDRIVER_BIN_NAME;
+		
+		if (SystemUtils.IS_OS_LINUX) {
+			
+			binLocation = CHROMEDRIVER_BIN_LOCATION_LINUX + File.separatorChar + CHROMEDRIVER_BIN_NAME;
+			
+		}
+		
+		System.setProperty(CHROMEDRIVER_PROPERTY_NAME, binLocation);
 	}
 	
 	private static String getFileExt() {
