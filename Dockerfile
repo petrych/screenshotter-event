@@ -48,9 +48,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
         chromium \
         chromium-chromedriver
 
-# Hardcoded because wanted to comply with the existing setup
-EXPOSE 8083
-
 ENTRYPOINT ["java","-jar","/screenshotter.jar"]
 
 CMD '/bootstrap.sh'
