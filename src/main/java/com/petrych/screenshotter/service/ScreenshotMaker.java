@@ -18,16 +18,15 @@ import java.net.URL;
 
 public class ScreenshotMaker {
 	
-	// Directory with Chromedriver
 	private static final String CHROMEDRIVER_BIN_LOCATION_APP = "tools";
-	
-	private static final String IMAGE_FORMAT_NAME = "png";
-	
-	public static final String CHROMEDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
 	
 	public static final String CHROMEDRIVER_BIN_LOCATION_LINUX = "/usr/bin";
 	
 	public static final String CHROMEDRIVER_BIN_NAME = "chromedriver";
+	
+	public static final String CHROMEDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
+	
+	private static final String IMAGE_FORMAT_NAME = "png";
 	
 	private String storageDir;
 	
@@ -59,21 +58,6 @@ public class ScreenshotMaker {
 		}
 		
 		return fileName;
-	}
-	
-	public static String createFileName(String urlString) throws InvalidURLException {
-		
-		return parseUrlString(urlString).concat(getFileExt());
-	}
-	
-	private static String parseUrlString(String urlString) throws InvalidURLException {
-		
-		isUrlValid(urlString);
-		
-		return urlString.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "")
-		                .replaceAll("\\W|_", "-")
-		                .replaceAll("-{2,}", "-")
-		                .replaceAll("-$", "");
 	}
 	
 	private static WebDriver getWebDriver(String urlString) {
@@ -110,6 +94,21 @@ public class ScreenshotMaker {
 		}
 		
 		System.setProperty(CHROMEDRIVER_PROPERTY_NAME, binLocation);
+	}
+	
+	public static String createFileName(String urlString) throws InvalidURLException {
+		
+		return parseUrlString(urlString).concat(getFileExt());
+	}
+	
+	private static String parseUrlString(String urlString) throws InvalidURLException {
+		
+		isUrlValid(urlString);
+		
+		return urlString.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "")
+		                .replaceAll("\\W|_", "-")
+		                .replaceAll("-{2,}", "-")
+		                .replaceAll("-$", "");
 	}
 	
 	private static String getFileExt() {
