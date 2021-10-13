@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import static com.petrych.screenshotter.common.FileUtil.copyFolder;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
