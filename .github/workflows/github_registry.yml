@@ -49,6 +49,13 @@ jobs:
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       -
+        name: Log in to GitHub Container registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
         name: Deploy to Azure
         uses: azure/webapps-deploy@v2
         with:
