@@ -52,9 +52,9 @@ jobs:
         name: Log in to GitHub Container registry
         uses: azure/docker-login@v1
         with:
-          login-server: ghcr.io
+          login-server: 'https://ghcr.io/petrych/'
           username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Deploy to Azure
         uses: azure/webapps-deploy@v2
