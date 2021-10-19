@@ -53,7 +53,7 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ secrets.GITHUB_USERNAME }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Deploy to Azure
