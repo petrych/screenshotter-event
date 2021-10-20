@@ -52,7 +52,7 @@ jobs:
         name: Log in to GitHub Container registry
         uses: azure/docker-login@v1
         with:
-          login-server: 'https://ghcr.io/petrych/'
+          login-server: ghcr.io
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       -
