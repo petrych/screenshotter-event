@@ -21,7 +21,7 @@ Application is shipped with Chrome Driver for Mac.
 
 ### IMPORTANT
 
-The application runs on port *8083*.
+The application runs on port *8080*.
 To change the port, go to _**.src/main/resources/application.properties**_ and change the value of the ```server.port``` property.
 
 
@@ -50,9 +50,9 @@ mvn spring-boot:run
 
 #### 3. Use the app in a browser
 
-To access the application open http://localhost:8083/screenshotter/screenshots/. A JSON representation of several screenshots will be shown.
+To access the application open http://localhost:8080/screenshotter/screenshots/. A JSON representation of several screenshots will be shown.
     
-To see a screenshot with id 1, call the http://localhost:8083/screenshotter/screenshots/1 URL.
+To see a screenshot with id 1, call the http://localhost:8080/screenshotter/screenshots/1 URL.
 
 To create a screenshot of the Apple.com webpage, use an application that can send HTTP requests, for example, Postman.
 Send a POST request containing "http://apple.com" as plain text in the body. 
@@ -62,14 +62,14 @@ Send a POST request containing "http://apple.com" as plain text in the body.
 Get all screenshots (Run the curl command in a new tab)
 ```
 curl --request GET \
---url http://localhost:8083/screenshotter/screenshots/ \
+--url http://localhost:8080/screenshotter/screenshots/ \
 --header 'content-type: application/json'
 ```
 
 Create a screenshot of the Apple.com webpage (Run the curl command in a new tab)
 ```
 curl --request POST \
---url http://localhost:8083/screenshotter/screenshots/ \
+--url http://localhost:8080/screenshotter/screenshots/ \
 --header 'content-type: text/plain' \
 --data "http://apple.com"
 ```
@@ -83,7 +83,7 @@ docker build --tag screenshotter .
 
 #### 2. Run the image in the container
 ```
-docker run -d -p 8083:8083 screenshotter
+docker run -d -p 8080:8080 screenshotter
 ```
 
 Go in to the container’s file system
