@@ -5,6 +5,8 @@ import com.petrych.screenshotter.service.IScreenshotService;
 import com.petrych.screenshotter.service.InvalidURLException;
 import com.petrych.screenshotter.web.dto.ScreenshotDto;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +26,8 @@ import java.util.List;
 @RequestMapping(value = "/screenshots")
 public class ScreenshotController {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotController.class);
+	
 	@Autowired
 	private IScreenshotService screenshotService;
 	
@@ -40,6 +44,7 @@ public class ScreenshotController {
 		Iterable<Screenshot> allScreenshots = screenshotService.findAll();
 		List<ScreenshotDto> screenshotDtos = new ArrayList<>();
 		allScreenshots.forEach(p -> screenshotDtos.add(convertToDto(p)));
+		LOG.debug("Screenshots total: {}", screenshotDtos.size());
 		
 		return screenshotDtos;
 	}

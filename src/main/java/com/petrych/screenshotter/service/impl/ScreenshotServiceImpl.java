@@ -82,7 +82,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			if (fileExists) {
 				return new File(getStorageLocation() + File.separatorChar + screenshotName);
 			} else {
-				LOG.debug("Screenshot file not found with id={} and name '{}'.", id, screenshotName);
+				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id, screenshotName);
 			}
 		}
 		
@@ -113,6 +113,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		Screenshot screenshot = new Screenshot(fileName, buildUriForFileName(fileName));
 		screenshotRepo.save(screenshot);
+		LOG.debug("Stored screenshot: {}", screenshot);
 		
 		return fileName;
 	}
@@ -137,6 +138,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			screenshot.setDateTimeCreated(LocalDateTime.now());
 			
 			screenshotRepo.save(screenshot);
+			LOG.debug("Updated screenshot: {}", screenshot);
 		}
 	}
 	
@@ -154,6 +156,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			
 			screenshotRepo.delete(screenshot);
 			this.deleteFile(fileNameToSearchFor);
+			LOG.debug("Removed screenshot: {}", screenshot);
 		}
 	}
 	
