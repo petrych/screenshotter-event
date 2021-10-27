@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest
 public class ScreenshotRestAPILiveTest {
 	
-	private static final String BASE_URL = "http://localhost:8083/screenshotter/screenshots/";
+	private static final String BASE_URL = "http://localhost:8080/screenshotter/screenshots/";
 	
 	private static WebTestClient client;
 	
