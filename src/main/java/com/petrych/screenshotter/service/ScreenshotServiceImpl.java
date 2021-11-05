@@ -1,12 +1,9 @@
-package com.petrych.screenshotter.service.impl;
+package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.config.StorageProperties;
 import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
-import com.petrych.screenshotter.service.IScreenshotService;
-import com.petrych.screenshotter.service.InvalidURLException;
-import com.petrych.screenshotter.service.ScreenshotMaker;
 import com.petrych.screenshotter.web.controller.ScreenshotController;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
