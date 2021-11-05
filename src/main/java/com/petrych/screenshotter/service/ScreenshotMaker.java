@@ -22,17 +22,22 @@ public class ScreenshotMaker {
 	
 	private static final String CHROMEDRIVER_BIN_LOCATION_APP = "tools";
 	
-	public static final String CHROMEDRIVER_BIN_LOCATION_LINUX = "/usr/bin";
+	private static final String CHROMEDRIVER_BIN_LOCATION_LINUX = "/usr/bin";
 	
-	public static final String CHROMEDRIVER_BIN_NAME = "chromedriver";
+	private static final String CHROMEDRIVER_BIN_NAME = "chromedriver";
 	
-	public static final String CHROMEDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
+	private static final String CHROMEDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
+	
+	private static final String CHROMEDRIVER_WHITELISTED_IPS_PROPERTY_NAME = "webdriver.chrome.whitelistedIps";
+	
+	private static final String CHROMEDRIVER_WHITELISTED_IPS = "172.17.0.2, 172.17.0.3";
 	
 	private static final String IMAGE_FORMAT_NAME = "png";
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotMaker.class);
 	
 	private String storageDir;
+	
 	
 	public ScreenshotMaker(String storageDir) {
 		
@@ -73,7 +78,7 @@ public class ScreenshotMaker {
 		
 		setChromeDriverBinaryLocation();
 		
-		System.setProperty("webdriver.chrome.whitelistedIps", "172.17.0.2, 172.17.0.3");
+		System.setProperty(CHROMEDRIVER_WHITELISTED_IPS_PROPERTY_NAME, CHROMEDRIVER_WHITELISTED_IPS);
 		
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--no-sandbox"); // Bypass OS security model
