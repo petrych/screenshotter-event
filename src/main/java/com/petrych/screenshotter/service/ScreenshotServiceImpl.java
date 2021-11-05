@@ -106,6 +106,8 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	@Override
 	public String storeFile(String urlString) throws InvalidURLException {
 		
+		UrlUtil.isUrlValid(urlString);
+		
 		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 		
 		Screenshot screenshot = new Screenshot(fileName, buildUriForFileName(fileName));
@@ -127,6 +129,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			this.storeFile(urlString);
 			
 		} else {
+			UrlUtil.isUrlValid(urlString);
 			// update if exists
 			new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 			
@@ -141,6 +144,8 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	
 	@Override
 	public void delete(String urlString) throws InvalidURLException, IOException {
+		
+		UrlUtil.isUrlValid(urlString);
 		
 		String fileNameToSearchFor = findFileNameByUrl(urlString);
 		
@@ -159,6 +164,8 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	
 	@Override
 	public String findFileNameByUrl(String urlString) throws InvalidURLException {
+		
+		UrlUtil.isUrlValid(urlString);
 		
 		for (String uri : findAllScreenshotUris()) {
 			String fileNameToSearchFor = ScreenshotMaker.createFileName(urlString);

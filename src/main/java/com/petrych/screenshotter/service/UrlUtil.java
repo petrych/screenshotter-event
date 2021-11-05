@@ -6,9 +6,7 @@ import java.net.URL;
 
 class UrlUtil {
 	
-	static String parseUrlString(String urlString) throws InvalidURLException {
-		
-		isUrlValid(urlString);
+	static String parseUrlString(String urlString) {
 		
 		return urlString.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "")
 		                .replaceAll("\\W|_", "-")

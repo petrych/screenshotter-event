@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-import static com.petrych.screenshotter.service.UrlUtil.isUrlValid;
 import static com.petrych.screenshotter.service.UrlUtil.parseUrlString;
 import static com.petrych.screenshotter.service.WebDriverManager.getWebDriver;
 
@@ -32,10 +31,7 @@ public class ScreenshotMaker {
 	
 	public String createFromUrl(String urlString) throws InvalidURLException {
 		
-		LOG.debug("Creating a screenshot (0/3): starting...");
-		
-		isUrlValid(urlString);
-		LOG.debug("Creating a screenshot (1/3): URL valid: {}", urlString);
+		LOG.debug("Creating a screenshot (1/3): Setting a WebDriver...");
 		
 		WebDriver driver = getWebDriver(urlString);
 		LOG.info("Creating a screenshot (2/3): WebDriver created successfully.");
