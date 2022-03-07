@@ -1,5 +1,6 @@
 package com.petrych.screenshotter.service;
 
+import com.google.common.base.Strings;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +41,7 @@ public class ScreenshotServiceIT {
 	
 	private static final String URL_FOR_EXISTING_SCREENSHOT = "https://www.drive.google.com/";
 	
-	private static final String URL_INVALID = "https://www.sdfghy878.qq/";
+	private static final String URL_UNREACHABLE = "https://www.sdfghy878.qq/";
 	
 	
 	@BeforeEach
@@ -109,7 +111,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenValidUrl_whenStore_thenSuccess() throws InvalidURLException, IOException {
+	void givenValidUrl_whenStore_thenSuccess() throws IOException {
 		
 		String fileName = screenshotService.storeFile(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);
@@ -123,7 +125,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenScreenshotWithUrlExists_whenFindFileNameByUrl_thenSuccess() throws InvalidURLException {
+	void givenScreenshotWithUrlExists_whenFindFileNameByUrl_thenSuccess() throws MalformedURLException {
 		
 		String fileName = ScreenshotMaker.createFileName(URL_FOR_EXISTING_SCREENSHOT);
 		Path filePath = Paths.get(storageDir, fileName);
@@ -133,7 +135,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() throws InvalidURLException {
+	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() throws MalformedURLException {
 		
 		String fileName = screenshotService.storeFile(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);
@@ -161,7 +163,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() throws InvalidURLException, IOException {
+	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() throws IOException {
 		
 		String fileName = ScreenshotMaker.createFileName(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);
@@ -185,15 +187,33 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenInvalidUrl_whenStore_thenInvalidURLException() {
+	void givenUnreachableUrl_whenStore_thenMalformedURLException() {
 		
-		assertThrows(InvalidURLException.class, () -> {
-			screenshotService.storeFile(URL_INVALID);
+		Exception ex = assertThrows(MalformedURLException.class, () -> {
+			screenshotService.storeFile(URL_UNREACHABLE);
 		});
+		
+		String actualMessage = ex.getMessage();
+		
+		assertTrue(actualMessage.contains(UrlUtil.CANNOT_REACH_THE_URL_MESSAGE));
 	}
 	
 	@Test
-	void givenScreenshotExists_whenDelete_thenSuccess() throws InvalidURLException, IOException {
+	void givenTooLongUrl_whenStore_thenMalformedURLException() {
+		
+		String urlTooLong = Strings.repeat("*", UrlUtil.URL_LENGTH_MAX);
+		
+		Exception ex = assertThrows(MalformedURLException.class, () -> {
+			screenshotService.storeFile(URL_VALID + urlTooLong);
+		});
+		
+		String actualMessage = ex.getMessage();
+		
+		assertTrue(actualMessage.contains(UrlUtil.URL_IS_TOO_LONG_MESSAGE));
+	}
+	
+	@Test
+	void givenScreenshotExists_whenDelete_thenSuccess() throws IOException {
 		
 		String fileName = screenshotService.storeFile(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);
@@ -208,7 +228,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenFileNotExists_whenDelete_thenFileNotFoundException() throws InvalidURLException, IOException {
+	void givenFileNotExists_whenDelete_thenFileNotFoundException() throws IOException {
 		
 		String fileName = screenshotService.storeFile(URL_VALID);
 		Path filePath = Paths.get(storageDir, fileName);

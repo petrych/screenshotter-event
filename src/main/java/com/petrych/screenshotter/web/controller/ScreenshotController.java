@@ -2,7 +2,6 @@ package com.petrych.screenshotter.web.controller;
 
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.service.IScreenshotService;
-import com.petrych.screenshotter.service.InvalidURLException;
 import com.petrych.screenshotter.web.dto.ScreenshotDto;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +73,7 @@ public class ScreenshotController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void store(@RequestBody String urlString) throws InvalidURLException {
+	public void store(@RequestBody String urlString) throws MalformedURLException {
 		
 		screenshotService.storeFile(urlString);
 	}
@@ -82,7 +82,7 @@ public class ScreenshotController {
 	
 	@PutMapping
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@RequestBody String urlString) throws InvalidURLException {
+	public void update(@RequestBody String urlString) throws MalformedURLException {
 		
 		screenshotService.update(urlString);
 	}
@@ -91,7 +91,7 @@ public class ScreenshotController {
 	
 	@DeleteMapping
 	@ResponseStatus(HttpStatus.OK)
-	public void delete(@RequestBody String urlString) throws InvalidURLException, IOException {
+	public void delete(@RequestBody String urlString) throws IOException {
 		
 		screenshotService.delete(urlString);
 	}

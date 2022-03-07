@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -104,7 +105,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	// store
 	
 	@Override
-	public String storeFile(String urlString) throws InvalidURLException {
+	public String storeFile(String urlString) throws MalformedURLException {
 		
 		UrlUtil.isUrlValid(urlString);
 		
@@ -120,7 +121,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	// update
 	
 	@Override
-	public void update(String urlString) throws InvalidURLException {
+	public void update(String urlString) throws MalformedURLException {
 		
 		String fileNameToSearchFor = findFileNameByUrl(urlString);
 		
@@ -143,7 +144,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	}
 	
 	@Override
-	public void delete(String urlString) throws InvalidURLException, IOException {
+	public void delete(String urlString) throws IOException {
 		
 		UrlUtil.isUrlValid(urlString);
 		
@@ -151,8 +152,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		if (fileNameToSearchFor.isEmpty()) {
 			throw new FileNotFoundException();
-		}
-		else {
+		} else {
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
 					.findByNameContaining(fileNameToSearchFor)).get(0);
 			
@@ -163,7 +163,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	}
 	
 	@Override
-	public String findFileNameByUrl(String urlString) throws InvalidURLException {
+	public String findFileNameByUrl(String urlString) throws MalformedURLException {
 		
 		UrlUtil.isUrlValid(urlString);
 		

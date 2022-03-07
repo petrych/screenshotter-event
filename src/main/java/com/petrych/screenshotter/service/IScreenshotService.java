@@ -4,6 +4,7 @@ import com.petrych.screenshotter.persistence.model.Screenshot;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -20,11 +21,12 @@ public interface IScreenshotService {
 	
 	Stream<Path> loadAllFiles();
 	
-	String storeFile(String urlString) throws InvalidURLException;
+	String storeFile(String urlString) throws MalformedURLException;
 	
-	void update(String urlString) throws InvalidURLException;
+	void update(String urlString) throws MalformedURLException;
 	
-	String findFileNameByUrl(String urlString) throws InvalidURLException;
+	String findFileNameByUrl(String urlString) throws MalformedURLException;
 	
-	void delete(String urlString) throws InvalidURLException, IOException;
+	void delete(String urlString) throws IOException;
+	
 }

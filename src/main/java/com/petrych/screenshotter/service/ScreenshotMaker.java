@@ -29,7 +29,7 @@ public class ScreenshotMaker {
 		this.storageDir = storageDir;
 	}
 	
-	public String createFromUrl(String urlString) throws InvalidURLException {
+	public String createFromUrl(String urlString) {
 		
 		LOG.debug("Creating a screenshot (1/3): Setting a WebDriver...");
 		
@@ -56,7 +56,7 @@ public class ScreenshotMaker {
 		return fileName;
 	}
 	
-	public static String createFileName(String urlString) throws InvalidURLException {
+	public static String createFileName(String urlString) {
 		
 		String fileName = parseUrlString(urlString);
 		String fileExtension = getFileExtension();
