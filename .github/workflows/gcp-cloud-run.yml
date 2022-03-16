@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-  CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }}
+  CREDENTIALS_JSON: ${{ secrets.GCP_SA_KEY }}
   SERVICE: screenshotter
   REGION: us-central1
 
