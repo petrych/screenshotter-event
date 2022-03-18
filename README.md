@@ -7,7 +7,8 @@ A RESTful webservice that creates screenshots of web pages and stores them in th
 - Maven 3
 - Spring 5
 - Spring Boot 2
-- JPA, Hibernate (im-memory DB with some predefined data)
+- JPA, Hibernate
+- MySQL 8
 - Selenium
 - Chrome Driver executable (*)
 - JUnit 5
@@ -27,7 +28,50 @@ To change the port, go to _**.src/main/resources/application.properties**_ and c
 
 ### RUNNING IN LOCAL ENVIRONMENT
 
-#### 1. Build
+#### 1. Set up MySQL
+
+### Install MySQL components
+
+- MySQL Server (locally):
+  https://dev.mysql.com/doc/refman/8.0/en/installing.html
+
+- MySQL Workbench (or another MySQL client application)
+  https://dev.mysql.com/doc/workbench/en/
+
+Run both applications.
+
+### Create the database
+
+The database is called "screenshotter" and runs on port *3306*.
+To change these settings, go to _**.src/main/resources/application.properties**_.
+
+Open a MySQL client and establish the connection to the database.
+
+Open a terminal (command prompt in Microsoft Windows) and open the MySQL client as a user who can create new users.
+For example, on a Linux system, use the following command:
+```
+sudo mysql --password
+```
+
+To create a new database, run the following commands at the mysql prompt:
+- to create the new database:
+```mysql> create database screenshotter;```
+- to create the user:
+```mysql> create user 'user'@'%' identified by '123'; ```
+- to give all privileges to the new user on the newly created database
+```mysql> grant all on screenshotter.* to 'user'@'%'; ```
+
+### Modify the application properties file
+
+For Hibernate to automatically translate the Screenshot entity into a table, set:
+```spring.jpa.hibernate.ddl-auto=create```
+This is needed when running the Screenshotter application for the first time.
+
+When the database table is created, set the property back to ```none```.
+See the Hibernate documentation for details:
+https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl
+
+#### 2. Build
 
 Build the project and run all unit tests:
 ```
@@ -39,7 +83,7 @@ Build without unit tests:
 mvn clean install -Dmaven.test.skip=true
 ```
 
-#### 2. Run
+#### 3. Run
 
 The project can be run as a Spring Boot app by using the main class - _**ScreenshotterApp.java**_.
 
@@ -48,16 +92,17 @@ To run the project **from the command line**, use the Maven command:
 mvn spring-boot:run
 ```
 
-#### 3. Use the app in a browser
+#### 4. Use the app in a browser
 
 To access the application open http://localhost:8080/screenshotter/screenshots/. A JSON representation of several screenshots will be shown.
-    
-To see a screenshot with id 1, call the http://localhost:8080/screenshotter/screenshots/1 URL.
+For the first run after installation, the list will be empty.
 
 To create a screenshot of the Apple.com webpage, use an application that can send HTTP requests, for example, Postman.
 Send a POST request containing "http://apple.com" as plain text in the body. 
 
-#### 4. Use the app via CLI
+To see a screenshot with id 1, call the http://localhost:8080/screenshotter/screenshots/1 URL.
+
+#### 5. Use the app via CLI
 
 Get all screenshots (Run the curl command in a new tab)
 ```
