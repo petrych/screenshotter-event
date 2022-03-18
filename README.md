@@ -61,15 +61,15 @@ To create a new database, run the following commands at the mysql prompt:
 - to give all privileges to the new user on the newly created database
 ```mysql> grant all on screenshotter.* to 'user'@'%'; ```
 
-### Modify the application properties file
+### Initial schema and data available
 
-For Hibernate to automatically translate the Screenshot entity into a table, set:
-```spring.jpa.hibernate.ddl-auto=create```
-This is needed when running the Screenshotter application for the first time.
+Hibernate automatic schema creation is disabled:
+```spring.jpa.hibernate.ddl-auto=none```
 
-When the database table is created, set the property back to ```none```.
-See the Hibernate documentation for details:
-https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl
+Initial schema and data is populated via _**src/main/resources/data.sql**_ script
+```spring.sql.init.mode=always```
+
+To change these settings, go to _**.src/main/resources/application.properties**_.
 
 #### 2. Build
 
