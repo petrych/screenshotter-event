@@ -48,7 +48,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
         chromium \
         chromium-chromedriver
 
-EXPOSE 8000
+EXPOSE 8080
 
 ENTRYPOINT ["java","-jar","/screenshotter.jar"]
 
