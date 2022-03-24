@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  screenshotter-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    links:
+      - screenshotter-db
+    ports:
+      - 8080:8080
+    container_name: screenshotter
+
+  screenshotter-db:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=PetPet!!
+      - MYSQL_DATABASE=screenshotter
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123
+    volumes:
+      - /data/mysql
+    ports:
+      - 3306:3306
+    container_name: screenshotter-db
