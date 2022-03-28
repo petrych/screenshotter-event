@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS screenshot (
   date_time_created VARCHAR(250) NOT NULL
 );
 
-INSERT IGNORE INTO screenshot (id, name, uri, date_time_created) VALUES (1, 'google-com.png', 'http://localhost:8083/screenshotter/screenshots/1', '2020-05-01');
-INSERT IGNORE INTO screenshot (id, name, uri, date_time_created) VALUES (2, 'stackoverflow-com.png', 'http://localhost:8083/screenshotter/screenshots/2', '2020-05-02');
-INSERT IGNORE INTO screenshot (id, name, uri, date_time_created) VALUES (3, 'google-2-com.png', 'http://localhost:8083/screenshotter/screenshots/3', '2020-05-14');
+INSERT IGNORE INTO screenshot (name, uri, date_time_created) VALUES ('google-com.png', 'http://localhost:8080/screenshotter/screenshots/1', '2020-05-01');
+INSERT IGNORE INTO screenshot (name, uri, date_time_created) VALUES ('stackoverflow-com.png', 'http://localhost:8080/screenshotter/screenshots/2', '2020-05-02');
+INSERT IGNORE INTO screenshot (name, uri, date_time_created) VALUES ('google-2-com.png', 'http://localhost:8080/screenshotter/screenshots/3', '2020-05-14');

@@ -111,8 +111,11 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 		
-		Screenshot screenshot = new Screenshot(fileName, buildUriForFileName(fileName));
+		Screenshot screenshot = new Screenshot(fileName, "");
 		screenshotRepo.save(screenshot);
+		screenshot.setUri(buildUri(screenshot.getId()));
+		screenshotRepo.save(screenshot);
+		
 		LOG.debug("Stored screenshot: {}", screenshot);
 		
 		return fileName;
@@ -186,11 +189,11 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		return storageLocation.toString();
 	}
 	
-	private String buildUriForFileName(String fileName) {
+	private String buildUri(long screenshotId) {
 		
 		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(ScreenshotController.class);
 		
-		return builder.path("/" + fileName)
+		return builder.path("/" + screenshotId)
 		              .build()
 		              .toUriString();
 	}

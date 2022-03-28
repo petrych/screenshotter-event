@@ -113,21 +113,27 @@ public class ScreenshotRestAPILiveTest {
 	@Test
 	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() {
 		
+		client.put()
+		      .bodyValue("https://www.drive.google.com/")
+		      .exchange()
+		      .expectStatus()
+		      .isOk();
+		
 		client.get()
 		      .uri(uriBuilder -> uriBuilder
 				      .path("/by-name/")
 				      .queryParam("name",
-				                  "google")
+				                  "drive")
 				      .build())
 		      .exchange()
 		      .expectStatus()
 		      .isOk()
 		      .expectBody()
 		      .jsonPath("$[0].name")
-		      .value(containsStringIgnoringCase("google"));
+		      .value(containsStringIgnoringCase("drive"));
 		
 		client.put()
-		      .bodyValue("https://www.google.com/")
+		      .bodyValue("https://www.drive.google.com/")
 		      .exchange()
 		      .expectStatus()
 		      .isOk();
@@ -140,7 +146,7 @@ public class ScreenshotRestAPILiveTest {
 		      .uri(uriBuilder -> uriBuilder
 				      .path("/by-name/")
 				      .queryParam("name",
-				                  "gmail")
+				                  "spring")
 				      .build())
 		      .exchange()
 		      .expectStatus()
@@ -149,7 +155,7 @@ public class ScreenshotRestAPILiveTest {
 		      .json("[]");
 		
 		client.put()
-		      .bodyValue("https://www.gmail.com/")
+		      .bodyValue("https://docs.spring.io/")
 		      .exchange()
 		      .expectStatus()
 		      .isOk();
@@ -158,14 +164,14 @@ public class ScreenshotRestAPILiveTest {
 		      .uri(uriBuilder -> uriBuilder
 				      .path("/by-name/")
 				      .queryParam("name",
-				                  "gmail")
+				                  "spring")
 				      .build())
 		      .exchange()
 		      .expectStatus()
 		      .isOk()
 		      .expectBody()
 		      .jsonPath("$[0].name")
-		      .value(containsStringIgnoringCase("gmail"));
+		      .value(containsStringIgnoringCase("spring"));
 	}
 	
 }

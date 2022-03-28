@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import static com.petrych.screenshotter.common.FileUtil.copyFolder;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Sql("/data.sql")
 public class ScreenshotServiceIT {
 	
 	@Autowired
@@ -97,7 +99,7 @@ public class ScreenshotServiceIT {
 	@Test
 	public void givenFileExists_whenGetScreenshotFileById_thenSuccess() {
 		
-		File screenshotFile = screenshotService.getScreenshotFileById(4L);
+		File screenshotFile = screenshotService.getScreenshotFileById(1L);
 		
 		assertTrue(screenshotFile.getName().contains("screenshot-1"));
 	}
