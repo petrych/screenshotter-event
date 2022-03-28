@@ -82,9 +82,9 @@ public class ScreenshotServiceIT {
 	@Test
 	public void givenScreenshotExists_whenfindById_thenSuccess() {
 		
-		Screenshot screenshot = screenshotService.findById(4L).get();
+		Screenshot screenshot = screenshotService.findById(1L).get();
 		
-		assertEquals(4L, (long) screenshot.getId());
+		assertEquals(1L, (long) screenshot.getId());
 	}
 	
 	@Test
