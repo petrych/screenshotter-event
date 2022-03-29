@@ -4,7 +4,6 @@ import com.petrych.screenshotter.config.StorageProperties;
 import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
-import com.petrych.screenshotter.web.controller.ScreenshotController;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +110,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
 		
-		Screenshot screenshot = new Screenshot(fileName, "");
-		screenshotRepo.save(screenshot);
-		screenshot.setUri(buildUri(screenshot.getId()));
+		Screenshot screenshot = new Screenshot(fileName);
 		screenshotRepo.save(screenshot);
 		
 		LOG.debug("Stored screenshot: {}", screenshot);
@@ -187,15 +184,6 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	private String getStorageLocation() {
 		
 		return storageLocation.toString();
-	}
-	
-	private String buildUri(long screenshotId) {
-		
-		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(ScreenshotController.class);
-		
-		return builder.path("/" + screenshotId)
-		              .build()
-		              .toUriString();
 	}
 	
 	private Collection<String> findAllScreenshotUris() {

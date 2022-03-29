@@ -9,9 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -110,26 +111,18 @@ public class ScreenshotController {
 	
 	private ScreenshotDto convertToDto(Screenshot entity) {
 		
-		return new ScreenshotDto(entity.getId(), entity.getName(), entity.getUri(), entity.getDateTimeCreated());
+		long entityId = entity.getId();
+		
+		return new ScreenshotDto(entityId, entity.getName(), buildUri(entityId), entity.getDateTimeCreated());
 	}
 	
-	private Screenshot convertToEntity(ScreenshotDto dto) {
+	private String buildUri(long screenshotId) {
 		
-		Screenshot screenshot = new Screenshot(dto.getName(), dto.getUri());
+		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(ScreenshotController.class);
 		
-		if (!StringUtils.isEmpty(dto.getId())) {
-			screenshot.setId(dto.getId());
-		}
-		
-		if (!StringUtils.isEmpty(dto.getUri())) {
-			screenshot.setUri(dto.getUri());
-		}
-		
-		if (!StringUtils.isEmpty(dto.getDateTimeCreated())) {
-			screenshot.setDateTimeCreated(dto.getDateTimeCreated());
-		}
-		
-		return screenshot;
+		return builder.path("/" + screenshotId)
+		              .build()
+		              .toUriString();
 	}
 	
 }

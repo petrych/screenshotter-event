@@ -1,9 +1,6 @@
 package com.petrych.screenshotter.persistence.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -16,6 +13,7 @@ public class Screenshot {
 	
 	private String name;
 	
+	@Transient
 	private String uri;
 	
 	private LocalDateTime dateTimeCreated;
@@ -24,10 +22,9 @@ public class Screenshot {
 	
 	}
 	
-	public Screenshot(String name, String uri) {
+	public Screenshot(String name) {
 		
 		this.name = name;
-		this.uri = uri;
 		this.dateTimeCreated = LocalDateTime.now();
 	}
 	
@@ -103,8 +100,7 @@ public class Screenshot {
 		
 		return "Screenshot [" +
 				"id=" + id +
-				", name='" + name + '\'' +
-				", uri='" + uri + '\'' +
+				", name='" + name +
 				", dateTimeCreated=" + dateTimeCreated +
 				']';
 	}

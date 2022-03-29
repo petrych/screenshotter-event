@@ -76,7 +76,6 @@ public class ScreenshotServiceIT {
 		ArrayList<Screenshot> screenshots = (ArrayList<Screenshot>) screenshotService.findAll();
 		
 		assertTrue(screenshots.size() > 0);
-		assertTrue(screenshots.get(0).getUri().matches(".+\\d+$"));
 	}
 	
 	@Test
@@ -93,7 +92,6 @@ public class ScreenshotServiceIT {
 		ArrayList<Screenshot> screenshots = (ArrayList<Screenshot>) screenshotService.findByName("screen");
 		
 		assertTrue(screenshots.get(0).getName().contains("screen"));
-		assertTrue(screenshots.get(0).getUri().matches(".+\\d+$"));
 	}
 	
 	@Test
@@ -241,4 +239,5 @@ public class ScreenshotServiceIT {
 			screenshotService.delete(URL_VALID);
 		});
 	}
+	
 }
