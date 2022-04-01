@@ -18,22 +18,25 @@ public class Screenshot {
 	
 	private LocalDateTime dateTimeCreated;
 	
+	@Column(unique = true)
+	private String fileName;
+	
 	protected Screenshot() {
 	
 	}
 	
-	public Screenshot(String name) {
+	public Screenshot(String name, String fileName) {
 		
 		this.name = name;
 		this.dateTimeCreated = LocalDateTime.now();
+		this.fileName = fileName;
 	}
 	
-	public Screenshot(Long id, String name, String uri, LocalDateTime dateTimeCreated) {
+	public Screenshot(String name, LocalDateTime dateTimeCreated, String fileName) {
 		
-		this.id = id;
 		this.name = name;
-		this.uri = uri;
 		this.dateTimeCreated = dateTimeCreated;
+		this.fileName = fileName;
 	}
 	
 	public Long getId() {
@@ -76,6 +79,16 @@ public class Screenshot {
 		this.dateTimeCreated = dateTimeCreated;
 	}
 	
+	public String getFileName() {
+		
+		return fileName;
+	}
+	
+	public void setFileName(String fileName) {
+		
+		this.fileName = fileName;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		
@@ -86,13 +99,14 @@ public class Screenshot {
 		return id.equals(that.id) &&
 				name.equals(that.name) &&
 				uri.equals(that.uri) &&
-				dateTimeCreated.equals(that.dateTimeCreated);
+				dateTimeCreated.equals(that.dateTimeCreated) &&
+				fileName.equals(that.fileName);
 	}
 	
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(id, name, uri, dateTimeCreated);
+		return Objects.hash(id, name, uri, dateTimeCreated, fileName);
 	}
 	
 	@Override

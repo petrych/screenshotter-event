@@ -7,4 +7,6 @@ public interface IScreenshotRepository extends PagingAndSortingRepository<Screen
 	
 	Iterable<Screenshot> findByNameContaining(String name);
 	
+	Screenshot findByFileName(String fileName);
+	
 }

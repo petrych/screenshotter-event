@@ -1,5 +1,6 @@
 package com.petrych.screenshotter.service;
 
+import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.config.StorageProperties;
 import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,9 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,13 +73,13 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		Optional<Screenshot> entity = screenshotRepo.findById(id);
 		
 		if (entity.isPresent()) {
-			String screenshotName = entity.get().getName();
-			boolean fileExists = Files.exists(Paths.get(getStorageLocation(), screenshotName));
+			String fileName = entity.get().getFileName();
+			boolean fileExists = Files.exists(Paths.get(getStorageLocation(), fileName));
 			
 			if (fileExists) {
-				return new File(getStorageLocation() + File.separatorChar + screenshotName);
+				return new File(getStorageLocation() + File.separatorChar + fileName);
 			} else {
-				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id, screenshotName);
+				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id, fileName);
 			}
 		}
 		
@@ -104,18 +104,26 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	// store
 	
 	@Override
-	public String storeFile(String urlString) throws MalformedURLException {
+	public Screenshot storeFile(String urlString) throws MalformedURLException {
 		
 		UrlUtil.isUrlValid(urlString);
 		
-		String fileName = new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
+		String fileName = "";
+		boolean fileNameUnique = false;
+		while (!fileNameUnique) {
+			fileName = FileUtil.generateFileName();
+			fileNameUnique = !screenshotFileExists(fileName);
+		}
 		
-		Screenshot screenshot = new Screenshot(fileName);
+		String screenshotName = new ScreenshotMaker(
+				getStorageLocation()).createScreenshotWithNameAndFile(urlString, fileName);
+		
+		Screenshot screenshot = new Screenshot(screenshotName, fileName);
 		screenshotRepo.save(screenshot);
 		
 		LOG.debug("Stored screenshot: {}", screenshot);
 		
-		return fileName;
+		return screenshot;
 	}
 	
 	// update
@@ -123,7 +131,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	@Override
 	public void update(String urlString) throws MalformedURLException {
 		
-		String fileNameToSearchFor = findFileNameByUrl(urlString);
+		Collection<String> fileNameToSearchFor = findFileNamesByUrl(urlString);
 		
 		if (fileNameToSearchFor.isEmpty()) {
 			// create if doesn't exist
@@ -132,10 +140,18 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		} else {
 			UrlUtil.isUrlValid(urlString);
 			// update if exists
-			new ScreenshotMaker(getStorageLocation()).createFromUrl(urlString);
+			ArrayList<String> fileNames = (ArrayList<String>) findFileNamesByUrl(urlString);
+			if (fileNames.isEmpty()) {
+				return;
+			}
+			
+			String fileNameToupdate = fileNames.get(0);
+			
+			String screenshotName = new ScreenshotMaker(getStorageLocation()).createScreenshotWithNameAndFile(urlString,
+			                                                                                                  fileNameToupdate);
 			
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
-					.findByNameContaining(fileNameToSearchFor)).get(0);
+					.findByNameContaining(screenshotName)).get(0);
 			screenshot.setDateTimeCreated(LocalDateTime.now());
 			
 			screenshotRepo.save(screenshot);
@@ -148,35 +164,46 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		UrlUtil.isUrlValid(urlString);
 		
-		String fileNameToSearchFor = findFileNameByUrl(urlString);
+		Collection<String> fileNamesToSearchFor = findFileNamesByUrl(urlString);
 		
-		if (fileNameToSearchFor.isEmpty()) {
+		if (fileNamesToSearchFor.isEmpty()) {
 			throw new FileNotFoundException();
 		} else {
-			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
-					.findByNameContaining(fileNameToSearchFor)).get(0);
+			for (String fileName : fileNamesToSearchFor) {
+				Screenshot screenshot = screenshotRepo.findByFileName(fileName);
+				
+				if (screenshot != null) {
+					screenshotRepo.delete(screenshot);
+					this.deleteFile(fileName);
+					LOG.debug("Removed screenshot: {}", screenshot);
+				}
+			}
 			
-			screenshotRepo.delete(screenshot);
-			this.deleteFile(fileNameToSearchFor);
-			LOG.debug("Removed screenshot: {}", screenshot);
 		}
 	}
 	
 	@Override
-	public String findFileNameByUrl(String urlString) throws MalformedURLException {
+	public Collection<String> findFileNamesByUrl(String urlString) throws MalformedURLException {
 		
 		UrlUtil.isUrlValid(urlString);
+		String screenshotNameToSearchFor = UrlUtil.parseUrlString(urlString);
 		
-		for (String uri : findAllScreenshotUris()) {
-			String fileNameToSearchFor = ScreenshotMaker.createFileName(urlString);
+		Collection<String> screenshotFiles = new ArrayList<>();
+		Iterable<Screenshot> screenshots = findByName(screenshotNameToSearchFor);
+		
+		if (CollectionUtils.isEmpty((Collection) screenshots)) {
+			return Collections.emptyList();
+		}
+		
+		for (Screenshot screenshot : screenshots) {
+			String fileName = screenshot.getFileName();
 			
-			if (uri.endsWith(fileNameToSearchFor)) {
-				
-				return fileNameToSearchFor;
+			if (fileName != null) {
+				screenshotFiles.add(screenshot.getFileName());
 			}
 		}
 		
-		return "";
+		return screenshotFiles;
 	}
 	
 	// helper methods
@@ -205,6 +232,15 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		
 		File fileToDelete = FileUtils.getFile(getStorageLocation() + File.separatorChar + fileName);
 		FileUtils.forceDelete(fileToDelete);
+	}
+	
+	private boolean screenshotFileExists(String fileName) {
+		
+		List<Path> list = this.loadAllFiles()
+		                      .filter(path -> path.getFileName().toString().contains(fileName))
+		                      .collect(Collectors.toList());
+		
+		return !list.isEmpty();
 	}
 	
 }

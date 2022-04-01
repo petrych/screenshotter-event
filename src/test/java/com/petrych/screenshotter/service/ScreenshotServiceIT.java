@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +98,7 @@ public class ScreenshotServiceIT {
 		
 		File screenshotFile = screenshotService.getScreenshotFileById(1L);
 		
-		assertTrue(screenshotFile.getName().contains("screenshot-1"));
+		assertTrue(screenshotFile.getName().contains("1.png"));
 	}
 	
 	@Test
@@ -113,7 +112,8 @@ public class ScreenshotServiceIT {
 	@Test
 	void givenValidUrl_whenStore_thenSuccess() throws IOException {
 		
-		String fileName = screenshotService.storeFile(URL_VALID);
+		Screenshot screenshot = screenshotService.storeFile(URL_VALID);
+		String fileName = screenshot.getFileName();
 		Path filePath = Paths.get(storageDir, fileName);
 		
 		assertFalse(fileName.isEmpty());
@@ -127,32 +127,35 @@ public class ScreenshotServiceIT {
 	@Test
 	void givenScreenshotWithUrlExists_whenFindFileNameByUrl_thenSuccess() throws MalformedURLException {
 		
-		String fileName = ScreenshotMaker.createFileName(URL_FOR_EXISTING_SCREENSHOT);
-		Path filePath = Paths.get(storageDir, fileName);
+		String fileNameExpected = "3.png";
+		Path filePath = Paths.get(storageDir, fileNameExpected);
 		
-		assertEquals(fileName, screenshotService.findFileNameByUrl(URL_FOR_EXISTING_SCREENSHOT));
+		String fileNameActual = ((ArrayList<String>) screenshotService.findFileNamesByUrl(
+				URL_FOR_EXISTING_SCREENSHOT)).get(0);
+		assertEquals(fileNameExpected, fileNameActual);
 		assertTrue(Files.exists(filePath));
 	}
 	
 	@Test
 	void givenScreenshotWithUrlExists_whenUpdate_thenUpdateExistingScreenshot() throws MalformedURLException {
 		
-		String fileName = screenshotService.storeFile(URL_VALID);
+		Screenshot screenshot = screenshotService.storeFile(URL_VALID);
+		String fileName = screenshot.getFileName();
 		Path filePath = Paths.get(storageDir, fileName);
 		int screenshotsTotalBefore = ((Collection<Screenshot>) screenshotService.findAll()).size();
 		ArrayList<Screenshot> screenshotsBeforeUpd = new ArrayList<>(
-				(Collection<? extends Screenshot>) screenshotService.findByName(fileName));
+				(Collection<? extends Screenshot>) screenshotService.findByName(screenshot.getName()));
 		
 		Screenshot screenshotBefore = screenshotsBeforeUpd.get(0);
 		
-		assertFalse(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertFalse(screenshotService.findFileNamesByUrl(URL_VALID).isEmpty());
 		assertTrue(Files.exists(filePath));
 		
 		screenshotService.update(URL_VALID);
 		int screenshotsTotalAfter = ((Collection<Screenshot>) screenshotService.findAll()).size();
 		
 		ArrayList<Screenshot> screenshotsAfterUpd = new ArrayList<>(
-				(Collection<? extends Screenshot>) screenshotService.findByName(fileName));
+				(Collection<? extends Screenshot>) screenshotService.findByName(screenshot.getName()));
 		
 		Screenshot screenshotAfter = screenshotsAfterUpd.get(0);
 		
@@ -165,25 +168,18 @@ public class ScreenshotServiceIT {
 	@Test
 	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() throws IOException {
 		
-		String fileName = ScreenshotMaker.createFileName(URL_VALID);
-		Path filePath = Paths.get(storageDir, fileName);
+		Collection<String> screenshotsBeforeUpd = screenshotService.findFileNamesByUrl(URL_VALID);
+		long filesBeforeUpdCount = screenshotService.loadAllFiles().count();
 		
-		int screenshotsTotalBefore = ((Collection<Screenshot>) screenshotService.findAll()).size();
-		ArrayList<Screenshot> screenshotsBeforeUpd = new ArrayList<>(
-				(Collection<? extends Screenshot>) screenshotService.findByName(fileName));
+		assertTrue(screenshotsBeforeUpd.isEmpty());
 		
 		screenshotService.update(URL_VALID);
 		
-		int screenshotsTotalAfter = ((Collection<Screenshot>) screenshotService.findAll()).size();
+		Collection<String> screenshotsAfterUpd = screenshotService.findFileNamesByUrl(URL_VALID);
+		long filesAfterUpdCount = screenshotService.loadAllFiles().count();
 		
-		Assertions.assertTrue(screenshotsTotalAfter > screenshotsTotalBefore);
-		assertFalse(fileName.isEmpty());
-		assertEquals(fileName, screenshotService.findFileNameByUrl(URL_VALID));
-		assertTrue(Files.exists(filePath));
-		
-		// Clean up after the test
-		Files.delete(filePath);
-		assertFalse(Files.exists(Paths.get(storageDir, fileName)));
+		assertFalse(screenshotsAfterUpd.isEmpty());
+		assertTrue(filesBeforeUpdCount < filesAfterUpdCount);
 	}
 	
 	@Test
@@ -215,22 +211,24 @@ public class ScreenshotServiceIT {
 	@Test
 	void givenScreenshotExists_whenDelete_thenSuccess() throws IOException {
 		
-		String fileName = screenshotService.storeFile(URL_VALID);
+		Screenshot screenshot = screenshotService.storeFile(URL_VALID);
+		String fileName = screenshot.getFileName();
 		Path filePath = Paths.get(storageDir, fileName);
 		
-		assertFalse(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertFalse(screenshotService.findFileNamesByUrl(URL_VALID).isEmpty());
 		assertTrue(Files.exists(filePath));
 		
 		screenshotService.delete(URL_VALID);
 		
-		assertTrue(screenshotService.findFileNameByUrl(URL_VALID).isEmpty());
+		assertTrue(screenshotService.findFileNamesByUrl(URL_VALID).isEmpty());
 		assertTrue(Files.notExists(filePath));
 	}
 	
 	@Test
 	void givenFileNotExists_whenDelete_thenFileNotFoundException() throws IOException {
 		
-		String fileName = screenshotService.storeFile(URL_VALID);
+		Screenshot screenshot = screenshotService.storeFile(URL_VALID);
+		String fileName = screenshot.getFileName();
 		Path filePath = Paths.get(storageDir, fileName);
 		
 		FileUtils.forceDelete(filePath.toFile());
