@@ -20,14 +20,14 @@ public interface IScreenshotService {
 	
 	File getScreenshotFileById(Long id);
 	
-	Stream<Path> loadAllFiles();
+	Stream<Path> loadAllScreenshotFilePaths();
 	
-	Screenshot storeFile(String urlString) throws MalformedURLException;
+	Screenshot storeScreenshot(String urlString) throws MalformedURLException;
 	
-	void update(String urlString) throws MalformedURLException;
+	void updateScreenshot(String urlString) throws MalformedURLException;
 	
-	Collection<String> findFileNamesByUrl(String urlString) throws MalformedURLException;
+	Collection<String> findScreenshotFileNamesByUrl(String urlString) throws MalformedURLException;
 	
-	void delete(String urlString) throws IOException;
+	void deleteScreenshot(String urlString) throws IOException;
 	
 }

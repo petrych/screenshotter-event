@@ -76,7 +76,7 @@ public class ScreenshotController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void store(@RequestBody String urlString) throws MalformedURLException {
 		
-		screenshotService.storeFile(urlString);
+		screenshotService.storeScreenshot(urlString);
 	}
 	
 	// update
@@ -85,7 +85,7 @@ public class ScreenshotController {
 	@ResponseStatus(HttpStatus.OK)
 	public void update(@RequestBody String urlString) throws MalformedURLException {
 		
-		screenshotService.update(urlString);
+		screenshotService.updateScreenshot(urlString);
 	}
 	
 	// delete
@@ -94,7 +94,7 @@ public class ScreenshotController {
 	@ResponseStatus(HttpStatus.OK)
 	public void delete(@RequestBody String urlString) throws IOException {
 		
-		screenshotService.delete(urlString);
+		screenshotService.deleteScreenshot(urlString);
 	}
 	
 	// helper methods
