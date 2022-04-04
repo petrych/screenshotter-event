@@ -1,5 +1,6 @@
 package com.petrych.screenshotter.service;
 
+import com.google.common.collect.Iterables;
 import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.config.StorageProperties;
 import com.petrych.screenshotter.persistence.StorageException;
@@ -70,10 +71,10 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	@Override
 	public File getScreenshotFileById(Long id) {
 		
-		Optional<Screenshot> entity = screenshotRepo.findById(id);
+		Optional<Screenshot> screenshotEntity = screenshotRepo.findById(id);
 		
-		if (entity.isPresent()) {
-			String fileName = entity.get().getFileName();
+		if (screenshotEntity.isPresent()) {
+			String fileName = screenshotEntity.get().getFileName();
 			boolean fileExists = Files.exists(Paths.get(getStorageLocation(), fileName));
 			
 			if (fileExists) {
@@ -140,15 +141,15 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		} else {
 			UrlUtil.isUrlValid(urlString);
 			// update if exists
-			ArrayList<String> fileNames = (ArrayList<String>) findFileNamesByUrl(urlString);
+			Set<String> fileNames = (Set<String>) findFileNamesByUrl(urlString);
 			if (fileNames.isEmpty()) {
 				return;
 			}
 			
-			String fileNameToupdate = fileNames.get(0);
+			String fileNameToUpdate = Iterables.get(fileNames, 0);
 			
 			String screenshotName = new ScreenshotMaker(getStorageLocation()).createScreenshotWithNameAndFile(urlString,
-			                                                                                                  fileNameToupdate);
+			                                                                                                  fileNameToUpdate);
 			
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
 					.findByNameContaining(screenshotName)).get(0);
@@ -188,7 +189,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 		UrlUtil.isUrlValid(urlString);
 		String screenshotNameToSearchFor = UrlUtil.parseUrlString(urlString);
 		
-		Collection<String> screenshotFiles = new ArrayList<>();
+		Collection<String> screenshotFiles = new HashSet<>();
 		Iterable<Screenshot> screenshots = findByName(screenshotNameToSearchFor);
 		
 		if (CollectionUtils.isEmpty((Collection) screenshots)) {

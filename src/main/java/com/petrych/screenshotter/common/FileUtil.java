@@ -35,11 +35,9 @@ public class FileUtil {
 	
 	public static String generateFileName() {
 		
-		int randomInt = new SecureRandom().nextInt();
-		String fileName = String.valueOf(randomInt);
-		String fileExtension = getFileExtension();
+		String fileName = String.format("%d", new SecureRandom().nextInt());
 		
-		return fileName.concat(fileExtension);
+		return fileName.concat(getFileExtension());
 	}
 	
 	private static String getFileExtension() {

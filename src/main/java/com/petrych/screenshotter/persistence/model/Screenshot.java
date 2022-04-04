@@ -98,11 +98,7 @@ public class Screenshot {
 		if (o == null || getClass() != o.getClass()) return false;
 		Screenshot that = (Screenshot) o;
 		
-		return id.equals(that.id) &&
-				name.equals(that.name) &&
-				uri.equals(that.uri) &&
-				dateTimeCreated.equals(that.dateTimeCreated) &&
-				fileName.equals(that.fileName);
+		return id.equals(that.id);
 	}
 	
 	@Override
