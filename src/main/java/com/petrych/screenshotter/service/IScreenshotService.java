@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,14 +20,14 @@ public interface IScreenshotService {
 	
 	File getScreenshotFileById(Long id);
 	
-	Stream<Path> loadAllFiles();
+	Stream<Path> loadAllScreenshotFilePaths();
 	
-	String storeFile(String urlString) throws MalformedURLException;
+	Screenshot storeScreenshot(String urlString) throws MalformedURLException;
 	
-	void update(String urlString) throws MalformedURLException;
+	void updateScreenshot(String urlString) throws MalformedURLException;
 	
-	String findFileNameByUrl(String urlString) throws MalformedURLException;
+	Collection<String> findScreenshotFileNamesByUrl(String urlString) throws MalformedURLException;
 	
-	void delete(String urlString) throws IOException;
+	void deleteScreenshot(String urlString) throws IOException;
 	
 }

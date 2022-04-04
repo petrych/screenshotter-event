@@ -18,22 +18,32 @@ public class Screenshot {
 	
 	private LocalDateTime dateTimeCreated;
 	
-	protected Screenshot() {
+	@Column(unique = true, updatable = false)
+	private final String fileName;
 	
-	}
-	
-	public Screenshot(String name) {
+	public Screenshot(String name, String fileName) {
 		
 		this.name = name;
 		this.dateTimeCreated = LocalDateTime.now();
+		this.fileName = fileName;
 	}
 	
-	public Screenshot(Long id, String name, String uri, LocalDateTime dateTimeCreated) {
+	public Screenshot(String name, LocalDateTime dateTimeCreated, String fileName) {
 		
-		this.id = id;
 		this.name = name;
-		this.uri = uri;
 		this.dateTimeCreated = dateTimeCreated;
+		this.fileName = fileName;
+	}
+	
+	// For Hibernate only
+	private Screenshot() {
+		this.fileName = null;
+	}
+	
+	// For Hibernate only
+	private Screenshot(String fileName) {
+		
+		this.fileName = fileName;
 	}
 	
 	public Long getId() {
@@ -76,6 +86,11 @@ public class Screenshot {
 		this.dateTimeCreated = dateTimeCreated;
 	}
 	
+	public String getFileName() {
+		
+		return fileName;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		
@@ -83,16 +98,13 @@ public class Screenshot {
 		if (o == null || getClass() != o.getClass()) return false;
 		Screenshot that = (Screenshot) o;
 		
-		return id.equals(that.id) &&
-				name.equals(that.name) &&
-				uri.equals(that.uri) &&
-				dateTimeCreated.equals(that.dateTimeCreated);
+		return id.equals(that.id);
 	}
 	
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(id, name, uri, dateTimeCreated);
+		return Objects.hash(id, name, uri, dateTimeCreated, fileName);
 	}
 	
 	@Override
