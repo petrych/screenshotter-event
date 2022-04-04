@@ -18,12 +18,8 @@ public class Screenshot {
 	
 	private LocalDateTime dateTimeCreated;
 	
-	@Column(unique = true)
-	private String fileName;
-	
-	protected Screenshot() {
-	
-	}
+	@Column(unique = true, updatable = false)
+	private final String fileName;
 	
 	public Screenshot(String name, String fileName) {
 		
@@ -36,6 +32,17 @@ public class Screenshot {
 		
 		this.name = name;
 		this.dateTimeCreated = dateTimeCreated;
+		this.fileName = fileName;
+	}
+	
+	// For Hibernate only
+	private Screenshot() {
+		this.fileName = null;
+	}
+	
+	// For Hibernate only
+	private Screenshot(String fileName) {
+		
 		this.fileName = fileName;
 	}
 	
@@ -82,11 +89,6 @@ public class Screenshot {
 	public String getFileName() {
 		
 		return fileName;
-	}
-	
-	public void setFileName(String fileName) {
-		
-		this.fileName = fileName;
 	}
 	
 	@Override
