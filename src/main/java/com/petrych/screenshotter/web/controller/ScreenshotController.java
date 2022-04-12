@@ -33,7 +33,7 @@ public class ScreenshotController {
 	@Autowired
 	private IScreenshotService screenshotService;
 	
-	@Value("${sm://spring_cloud_gcp_sql_instance_connection_name}")
+	@Value("${spring.cloud.gcp.sql.instance-connection-name}")
 	private String sqlInstanceConnectionName;
 	
 	public ScreenshotController(IScreenshotService screenshotService) {
