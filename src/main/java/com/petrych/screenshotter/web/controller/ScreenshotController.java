@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,9 @@ public class ScreenshotController {
 	
 	@Autowired
 	private IScreenshotService screenshotService;
+	
+	@Value("${sm://spring_cloud_gcp_sql_instance_connection_name}")
+	private String sqlInstanceConnectionName;
 	
 	public ScreenshotController(IScreenshotService screenshotService) {
 		
@@ -95,6 +99,13 @@ public class ScreenshotController {
 	public void delete(@RequestBody String urlString) throws IOException {
 		
 		screenshotService.deleteScreenshot(urlString);
+	}
+	
+	// This method is only for testing Google Secret Manager on prod
+	@GetMapping("test-1-string")
+	@ResponseStatus(HttpStatus.OK)
+	public String getSqlInstanceName() {
+		return sqlInstanceConnectionName;
 	}
 	
 	// helper methods
