@@ -33,7 +33,7 @@ public class ScreenshotController {
 	@Autowired
 	private IScreenshotService screenshotService;
 	
-	@Value("${spring.cloud.gcp.sql.instance-connection-name}")
+	@Value("${sm://projects/148500988272/secrets/spring_cloud_gcp_sql_instance_connection_name}")
 	private String sqlInstanceConnectionName;
 	
 	public ScreenshotController(IScreenshotService screenshotService) {
@@ -105,6 +105,8 @@ public class ScreenshotController {
 	@GetMapping("test-1-string")
 	@ResponseStatus(HttpStatus.OK)
 	public String getSqlInstanceName() {
+		
+		System.out.println(sqlInstanceConnectionName);
 		return sqlInstanceConnectionName;
 	}
 	
