@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM openjdk:16-alpine3.13 as base
+FROM openjdk:11 as base
 
 WORKDIR /app
 
@@ -18,35 +18,43 @@ FROM base as development
 
 COPY --from=base /app/target/screenshotter-*.jar /screenshotter.jar
 
-# Add glibc to be able to run Chrome browser
-# Source: https://github.com/anapsix/docker-alpine-java
+RUN set -ex && apt update && apt upgrade && apt clean
 
-ENV GLIBC_REPO=https://github.com/sgerrand/alpine-pkg-glibc
-ENV GLIBC_VERSION=2.30-r0
+# Add a user for running applications
+RUN useradd apps
+RUN mkdir -p /home/apps && chown apps:apps /home/apps
 
-RUN set -ex && \
-    apk --update add libstdc++ curl ca-certificates && \
-    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION}; \
-        do curl -sSL ${GLIBC_REPO}/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
-    apk add --allow-untrusted /tmp/*.apk && \
-    rm -v /tmp/*.apk && \
-    /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
+# Install the needed components
+RUN apt-get install -y \
+            x11vnc \
+            xvfb \
+            fluxbox \
+            wmctrl \
+            wget
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
-    && apk update && apk upgrade \
-    && apk add \
-        --no-cache \
-          --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-          --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-        bash \
-        x11vnc \
-        xvfb \
-        fluxbox \
-        wmctrl \
-        wget \
-        chromium \
-        chromium-chromedriver
+# Set the Chrome repo
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+
+# Install Chrome
+RUN apt-get update && apt-get -y install google-chrome-stable
+
+# Download matching Chrome Driver
+# https://stackoverflow.com/a/61928952/167920
+RUN chromeVersion=$(google-chrome --product-version) \
+    && chromeMajorVersion=${chromeVersion%%.*} \
+    && latestDriverReleaseURL=https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$chromeMajorVersion \
+    && wget $latestDriverReleaseURL \
+    && latestDriverVersionFileName="LATEST_RELEASE_"$chromeMajorVersion \
+    && latestFullDriverVersion=$(cat $latestDriverVersionFileName) \
+    && rm $latestDriverVersionFileName \
+    && finalURL="http://chromedriver.storage.googleapis.com/"$latestFullDriverVersion"/chromedriver_linux64.zip" \
+    && wget $finalURL
+
+# Unzip the Chrome Driver executable and move it to the desired folder
+RUN unzip chromedriver_linux64.zip \
+    && rm chromedriver_linux64.zip \
+    && mv chromedriver /usr/bin/
 
 EXPOSE 8080
 
