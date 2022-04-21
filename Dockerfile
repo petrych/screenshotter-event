@@ -18,7 +18,7 @@ FROM base as development
 
 COPY --from=base /app/target/screenshotter-*.jar /screenshotter.jar
 
-RUN set -ex && apt update && apt upgrade && apt clean
+RUN set -ex && apt-get update && apt-get upgrade -y && apt-get clean
 
 # Add a user for running applications
 RUN useradd apps
