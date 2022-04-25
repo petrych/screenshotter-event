@@ -80,6 +80,7 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			if (fileExists) {
 				return new File(getStorageLocation() + File.separatorChar + fileName);
 			} else {
+				LOG.debug("Storage location: {}", getStorageLocation());
 				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id, fileName);
 			}
 		}
