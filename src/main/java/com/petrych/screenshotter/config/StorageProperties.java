@@ -1,5 +1,6 @@
 package com.petrych.screenshotter.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
@@ -8,7 +9,8 @@ public class StorageProperties {
 	/**
 	 * Folder location for storing screenshot files
 	 */
-	private String location = "storage";
+	@Value("${app.storage-location}")
+	private String location;
 	
 	public String getLocation() {
 		
