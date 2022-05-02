@@ -7,7 +7,6 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 COPY src ./src
-COPY storage ./storage
 COPY test-images ./test-images
 COPY tools ./tools
 COPY bootstrap.sh /
@@ -58,6 +57,6 @@ RUN unzip chromedriver_linux64.zip \
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/screenshotter.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar","/screenshotter.jar"]
 
 CMD '/bootstrap.sh'
