@@ -7,7 +7,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,9 +30,6 @@ public class ScreenshotController {
 	
 	@Autowired
 	private IScreenshotService screenshotService;
-	
-	@Value("${sm://projects/148500988272/secrets/spring_cloud_gcp_sql_instance_connection_name}")
-	private String sqlInstanceConnectionName;
 	
 	public ScreenshotController(IScreenshotService screenshotService) {
 		
@@ -57,11 +52,9 @@ public class ScreenshotController {
 	// find - one
 	
 	@GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-	public @ResponseBody byte[] findById(@PathVariable Long id) throws IOException {
+	public @ResponseBody byte[] findById(@PathVariable Long id) {
 		
-		File file = screenshotService.getScreenshotFileById(id);
-		
-		return convertFileToBytes(file);
+		return screenshotService.getScreenshotFileById(id);
 	}
 	
 	@GetMapping("/by-name")
@@ -78,7 +71,7 @@ public class ScreenshotController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void store(@RequestBody String urlString) throws MalformedURLException {
+	public void store(@RequestBody String urlString) throws IOException {
 		
 		screenshotService.storeScreenshot(urlString);
 	}
@@ -87,7 +80,7 @@ public class ScreenshotController {
 	
 	@PutMapping
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@RequestBody String urlString) throws MalformedURLException {
+	public void update(@RequestBody String urlString) throws IOException {
 		
 		screenshotService.updateScreenshot(urlString);
 	}
@@ -99,15 +92,6 @@ public class ScreenshotController {
 	public void delete(@RequestBody String urlString) throws IOException {
 		
 		screenshotService.deleteScreenshot(urlString);
-	}
-	
-	// This method is only for testing Google Secret Manager on prod
-	@GetMapping("test-1-string")
-	@ResponseStatus(HttpStatus.OK)
-	public String getSqlInstanceName() {
-		
-		System.out.println(sqlInstanceConnectionName);
-		return sqlInstanceConnectionName;
 	}
 	
 	// helper methods

@@ -1,38 +1,37 @@
 package com.petrych.screenshotter.service;
 
-import com.google.common.collect.Iterables;
+import com.google.api.gax.paging.Page;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.config.StorageProperties;
-import com.petrych.screenshotter.persistence.StorageException;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.util.CollectionUtils;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 class ScreenshotServiceImpl implements IScreenshotService {
 	
-	private final Path storageLocation;
-	
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotServiceImpl.class);
+	
+	private Storage storage;
+	
+	private String bucketName;
 	
 	@Autowired
 	private IScreenshotRepository screenshotRepo;
@@ -43,7 +42,9 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	public ScreenshotServiceImpl(IScreenshotRepository screenshotRepo, StorageProperties properties) {
 		
 		this.screenshotRepo = screenshotRepo;
-		this.storageLocation = Paths.get(properties.getLocation());
+		this.properties = properties;
+		this.storage = properties.storage;
+		this.bucketName = properties.getBucketForImages();
 	}
 	
 	// find - all
@@ -69,44 +70,36 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	}
 	
 	@Override
-	public File getScreenshotFileById(Long id) {
+	public byte[] getScreenshotFileById(Long id) {
+		
+		byte[] content = null;
 		
 		Optional<Screenshot> screenshotEntity = screenshotRepo.findById(id);
 		
 		if (screenshotEntity.isPresent()) {
 			String fileName = screenshotEntity.get().getFileName();
-			boolean fileExists = Files.exists(Paths.get(getStorageLocation(), fileName));
+			content = downloadObjectAsByteArray(fileName);
 			
-			if (fileExists) {
-				return new File(getStorageLocation() + File.separatorChar + fileName);
-			} else {
-				LOG.debug("Storage location: {}", getStorageLocation());
-				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id, screenshotEntity.get().getName());
+			if (content.length <= 0) {
+				LOG.debug("Screenshot file not found with screenshot id={} and name='{}'.", id,
+				          screenshotEntity.get().getName());
 			}
 		}
 		
-		return null;
+		return content;
 	}
 	
-	// other
-	
-	@Override
-	public Stream<Path> loadAllScreenshotFilePaths() {
+	public byte[] downloadObjectAsByteArray(String objectName) {
 		
-		try {
-			return Files.walk(this.storageLocation, 1)
-			            .filter(path -> !path.equals(this.storageLocation))
-			            .map(this.storageLocation::relativize);
-		} catch (IOException e) {
-			throw new StorageException("Failed to read stored files", e);
-		}
+		byte[] content = storage.readAllBytes(bucketName, objectName);
 		
+		return content;
 	}
 	
 	// store
 	
 	@Override
-	public Screenshot storeScreenshot(String urlString) throws MalformedURLException {
+	public Screenshot storeScreenshot(String urlString) throws IOException {
 		
 		UrlUtil.isUrlValid(urlString);
 		
@@ -117,21 +110,30 @@ class ScreenshotServiceImpl implements IScreenshotService {
 			fileNameUnique = !screenshotFileExists(fileName);
 		}
 		
-		String screenshotName = new ScreenshotMaker(
-				getStorageLocation()).createScreenshotWithNameAndFile(urlString, fileName);
+		Pair<String, ByteArrayOutputStream> pair = ScreenshotMaker.createScreenshotWithNameAndFile(urlString);
 		
-		Screenshot screenshot = new Screenshot(screenshotName, fileName);
+		Screenshot screenshot = new Screenshot(pair.getLeft(), fileName);
 		screenshotRepo.save(screenshot);
+		uploadScreenshotFileToGCP(pair.getRight(), fileName);
 		
 		LOG.debug("Stored screenshot: {}", screenshot);
 		
 		return screenshot;
 	}
 	
+	public void uploadScreenshotFileToGCP(ByteArrayOutputStream baos, String screenshotFileName) throws IOException {
+		
+		BlobId blobId = BlobId.of(bucketName, screenshotFileName);
+		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+		storage.createFrom(blobInfo, new ByteArrayInputStream(baos.toByteArray()));
+		
+		LOG.debug("Screenshot file uploaded to bucket {} as {}", bucketName, screenshotFileName);
+	}
+	
 	// update
 	
 	@Override
-	public void updateScreenshot(String urlString) throws MalformedURLException {
+	public void updateScreenshot(String urlString) throws IOException {
 		
 		Collection<String> fileNameToSearchFor = findScreenshotFileNamesByUrl(urlString);
 		
@@ -147,13 +149,10 @@ class ScreenshotServiceImpl implements IScreenshotService {
 				return;
 			}
 			
-			String fileNameToUpdate = Iterables.get(fileNames, 0);
-			
-			String screenshotName = new ScreenshotMaker(getStorageLocation()).createScreenshotWithNameAndFile(urlString,
-			                                                                                                  fileNameToUpdate);
+			Pair<String, ByteArrayOutputStream> pair = ScreenshotMaker.createScreenshotWithNameAndFile(urlString);
 			
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
-					.findByNameContaining(screenshotName)).get(0);
+					.findByNameContaining(pair.getLeft())).get(0);
 			screenshot.setDateTimeCreated(LocalDateTime.now());
 			
 			screenshotRepo.save(screenshot);
@@ -210,39 +209,22 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	
 	// helper methods
 	
-	private String getStorageLocation() {
+	private void deleteFile(String fileName) {
 		
-		return storageLocation.toString();
-	}
-	
-	private Collection<String> findAllScreenshotUris() {
-		
-		return this.loadAllScreenshotFilePaths()
-		           .map(this::convertFilePathToUriString)
-		           .collect(Collectors.toList());
-	}
-	
-	private String convertFilePathToUriString(Path path) {
-		
-		UriComponentsBuilder builder = MvcUriComponentsBuilder.fromController(this.getClass()).path("/");
-		
-		return builder.path(path.getFileName().toString())
-		              .build().toUriString();
-	}
-	
-	private void deleteFile(String fileName) throws IOException {
-		
-		File fileToDelete = FileUtils.getFile(getStorageLocation() + File.separatorChar + fileName);
-		FileUtils.forceDelete(fileToDelete);
+		storage.delete(bucketName, fileName);
 	}
 	
 	private boolean screenshotFileExists(String fileName) {
 		
-		List<Path> list = this.loadAllScreenshotFilePaths()
-		                      .filter(path -> path.getFileName().toString().contains(fileName))
-		                      .collect(Collectors.toList());
+		Page<Blob> blobs = storage.list(bucketName);
 		
-		return !list.isEmpty();
+		for (Blob blob : blobs.iterateAll()) {
+			if (blob.getName().contains(fileName)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 }

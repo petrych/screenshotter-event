@@ -1,25 +1,36 @@
 package com.petrych.screenshotter.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("storage")
+@ConfigurationProperties("app")
 public class StorageProperties {
 	
-	/**
-	 * Folder location for storing screenshot files
-	 */
-	@Value("${app.storage-location}")
-	private String location;
+	private String projectId;
 	
-	public String getLocation() {
+	private String bucketForImages;
+	
+	public final Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+	
+	public String getProjectId() {
 		
-		return location;
+		return projectId;
 	}
 	
-	public void setLocation(String location) {
+	public void setProjectId(String projectId) {
 		
-		this.location = location;
+		this.projectId = projectId;
+	}
+	
+	public String getBucketForImages() {
+		
+		return bucketForImages;
+	}
+	
+	public void setBucketForImages(String bucketForImages) {
+		
+		this.bucketForImages = bucketForImages;
 	}
 	
 }

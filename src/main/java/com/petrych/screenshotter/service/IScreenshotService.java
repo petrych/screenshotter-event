@@ -2,13 +2,10 @@ package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.persistence.model.Screenshot;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface IScreenshotService {
 	
@@ -18,13 +15,11 @@ public interface IScreenshotService {
 	
 	Iterable<Screenshot> findByName(String name);
 	
-	File getScreenshotFileById(Long id);
+	byte[] getScreenshotFileById(Long id);
 	
-	Stream<Path> loadAllScreenshotFilePaths();
+	Screenshot storeScreenshot(String urlString) throws IOException;
 	
-	Screenshot storeScreenshot(String urlString) throws MalformedURLException;
-	
-	void updateScreenshot(String urlString) throws MalformedURLException;
+	void updateScreenshot(String urlString) throws IOException;
 	
 	Collection<String> findScreenshotFileNamesByUrl(String urlString) throws MalformedURLException;
 	
