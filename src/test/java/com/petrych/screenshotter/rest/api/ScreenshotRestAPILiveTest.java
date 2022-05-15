@@ -29,7 +29,7 @@ public class ScreenshotRestAPILiveTest {
 				.build();
 	}
 	
-	@Test
+//	@Test
 	public void givenScreenshotsExist_whenfindAll_thenSuccess() {
 		
 		WebTestClient.BodyContentSpec bodyContentSpec =
@@ -84,7 +84,7 @@ public class ScreenshotRestAPILiveTest {
 		jsonPath.value(endsWithIgnoringCase("com.png"));
 	}
 	
-	@Test
+//	@Test
 	public void givenValidUrl_whenStore_thenSuccess() {
 		
 		client.mutate()

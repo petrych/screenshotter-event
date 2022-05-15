@@ -1,6 +1,10 @@
 package com.petrych.screenshotter.common;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.SecureRandom;
@@ -43,6 +47,13 @@ public class FileUtil {
 	private static String getFileExtension() {
 		
 		return "." + IMAGE_FORMAT_NAME;
+	}
+	
+	public static byte[] readFileAsBytes(String filePath) throws IOException {
+		
+		InputStream in = new FileInputStream(filePath);
+		
+		return IOUtils.toByteArray(in);
 	}
 	
 }

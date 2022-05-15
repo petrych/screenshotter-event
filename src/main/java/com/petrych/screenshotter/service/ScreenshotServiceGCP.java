@@ -6,13 +6,14 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.petrych.screenshotter.common.FileUtil;
-import com.petrych.screenshotter.config.StorageProperties;
+import com.petrych.screenshotter.config.IStorageProperties;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import reactor.util.CollectionUtils;
 
@@ -25,9 +26,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-class ScreenshotServiceImpl implements IScreenshotService {
+@Profile("gcp")
+class ScreenshotServiceGCP implements IScreenshotService {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotServiceGCP.class);
 	
 	private Storage storage;
 	
@@ -37,14 +39,14 @@ class ScreenshotServiceImpl implements IScreenshotService {
 	private IScreenshotRepository screenshotRepo;
 	
 	@Autowired
-	private StorageProperties properties;
+	private IStorageProperties properties;
 	
-	public ScreenshotServiceImpl(IScreenshotRepository screenshotRepo, StorageProperties properties) {
+	public ScreenshotServiceGCP(IScreenshotRepository screenshotRepo, IStorageProperties properties) {
 		
 		this.screenshotRepo = screenshotRepo;
 		this.properties = properties;
-		this.storage = properties.storage;
-		this.bucketName = properties.getBucketForImages();
+		this.storage = properties.getStorageObjectGCP();
+		this.bucketName = properties.getStorageDir();
 	}
 	
 	// find - all

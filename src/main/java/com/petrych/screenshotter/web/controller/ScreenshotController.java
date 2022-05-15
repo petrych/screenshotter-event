@@ -52,7 +52,7 @@ public class ScreenshotController {
 	// find - one
 	
 	@GetMapping(value = "/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-	public @ResponseBody byte[] findById(@PathVariable Long id) {
+	public @ResponseBody byte[] findById(@PathVariable Long id) throws IOException {
 		
 		return screenshotService.getScreenshotFileById(id);
 	}

@@ -15,7 +15,7 @@ public interface IScreenshotService {
 	
 	Iterable<Screenshot> findByName(String name);
 	
-	byte[] getScreenshotFileById(Long id);
+	byte[] getScreenshotFileById(Long id) throws IOException;
 	
 	Screenshot storeScreenshot(String urlString) throws IOException;
 	
