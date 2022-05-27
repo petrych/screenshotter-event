@@ -76,9 +76,20 @@ public class ScreenshotServiceLocal implements IScreenshotService {
 			if (fileExists) {
 				content = FileUtil.readFileAsBytes(getFilePathString(fileName));
 			} else {
-				LOG.debug("Screenshot file not found with screenshot id={} and name='{}' in storage location '{}'.", id,
-				          fileName, storageLocation);
+				String messageForClients = String.format(
+						"Screenshot file not found for screenshot id=%d", id);
+				String messageForInternalUse =  String.format(
+						"%s and name='%s' in storage location '%s'.", messageForClients, fileName, storageLocation);
+				LOG.debug(messageForInternalUse);
+				
+				throw new FileNotFoundException(messageForClients);
 			}
+		}
+		else {
+			String message = String.format("Screenshot not found with id=%d", id);
+			LOG.debug(message);
+			
+			throw new FileNotFoundException(message);
 		}
 		
 		return content;

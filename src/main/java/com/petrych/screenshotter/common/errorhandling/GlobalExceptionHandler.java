@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Objects;
 
@@ -38,6 +39,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			httpStatus = HttpStatus.BAD_GATEWAY;
 		}
 		ApiError apiError = new ApiError(httpStatus, ex.getMessage(), "", ex.toString());
+		
+		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
+		LOG.error(ex.toString());
+		
+		return responseEntity;
+	}
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex) {
+		
+		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+		ApiError apiError = new ApiError(httpStatus, ex.getClass().getCanonicalName(), "", ex.getMessage());
 		
 		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 		LOG.error(ex.toString());
