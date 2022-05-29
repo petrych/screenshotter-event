@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Objects;
@@ -26,34 +27,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	
 	@ExceptionHandler(MalformedURLException.class)
-	public ResponseEntity<Object> handleMalformedURLException(MalformedURLException ex) {
+	public ResponseEntity<Object> handleMalformedURLException(MalformedURLException ex, HttpServletRequest request) {
 		
-		String devMessage = ExceptionUtils.getRootCauseMessage(ex);
-		HttpStatus httpStatus = null;
+		String rootCauseMessage = ExceptionUtils.getRootCauseMessage(ex);
+		HttpStatus httpStatus;
 		
-		if (devMessage.contains(UrlUtil.URL_IS_TOO_LONG_MESSAGE)) {
+		if (rootCauseMessage.contains(UrlUtil.URL_IS_TOO_LONG_MESSAGE)) {
 			httpStatus = HttpStatus.BAD_REQUEST;
-			
-		}
-		if (devMessage.contains(UrlUtil.CANNOT_REACH_THE_URL_MESSAGE)) {
+		} else {
 			httpStatus = HttpStatus.BAD_GATEWAY;
 		}
-		ApiError apiError = new ApiError(httpStatus, ex.getMessage(), "", ex.toString());
+		
+		ApiError apiError = new ApiError(httpStatus.value(), ex.toString(), request.getRequestURI());
 		
 		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
-		LOG.error(ex.toString());
+		LOG.error(apiError.toString());
 		
 		return responseEntity;
 	}
 	
 	@ExceptionHandler(FileNotFoundException.class)
-	public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex) {
+	public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex, HttpServletRequest request) {
 		
 		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-		ApiError apiError = new ApiError(httpStatus, ex.getClass().getCanonicalName(), "", ex.getMessage());
+		ApiError apiError = new ApiError(httpStatus.value(), ex.getMessage(), request.getRequestURI());
 		
 		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
-		LOG.error(ex.toString());
+		LOG.error(apiError.toString());
 		
 		return responseEntity;
 	}

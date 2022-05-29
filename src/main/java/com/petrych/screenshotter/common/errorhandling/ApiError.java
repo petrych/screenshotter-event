@@ -1,58 +1,31 @@
 package com.petrych.screenshotter.common.errorhandling;
 
-import org.springframework.http.HttpStatus;
-
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class ApiError {
 	
-	private HttpStatus status;
+	private LocalDateTime timestamp;
+	
+	private int status;
 	
 	private String message;
 	
-	private String developerMessage;
+	private String path;
 	
-	private List<String> errors;
-	
-	
-	public ApiError(final HttpStatus status, final String message, final String developerMessage,
-	                final List<String> errors) {
+	public ApiError(final int httpStatusCode, final String message, final String path) {
 		
-		this.status = status;
+		this.timestamp = LocalDateTime.now();
+		this.status = httpStatusCode;
 		this.message = message;
-		this.developerMessage = developerMessage;
-		this.errors = errors;
+		this.path = path;
 	}
 	
-	public ApiError(final HttpStatus status, final String message, final String developerMessage, final String error) {
-		
-		this.status = status;
-		this.message = message;
-		this.developerMessage = developerMessage;
-		this.errors = Arrays.asList(error);
-	}
-	
-	public ApiError(final HttpStatus status, final String message, final List<String> errors) {
-		
-		this.status = status;
-		this.message = message;
-		this.errors = errors;
-	}
-	
-	public ApiError(final HttpStatus status, final String message, final String error) {
-		
-		this.status = status;
-		this.message = message;
-		this.errors = Arrays.asList(error);
-	}
-	
-	public HttpStatus getStatus() {
+	public int getStatus() {
 		
 		return status;
 	}
 	
-	public void setStatus(final HttpStatus status) {
+	public void setStatus(final int status) {
 		
 		this.status = status;
 	}
@@ -67,41 +40,25 @@ public class ApiError {
 		this.message = message;
 	}
 	
-	public String getDeveloperMessage() {
+	public String getPath() {
 		
-		return developerMessage;
+		return path;
 	}
 	
-	public void setDeveloperMessage(final String developerMessage) {
+	public void setPath(final String path) {
 		
-		this.developerMessage = developerMessage;
+		this.path = path;
 	}
-	
-	public List<String> getErrors() {
-		
-		return errors;
-	}
-	
-	public void setErrors(final List<String> errors) {
-		
-		this.errors = errors;
-	}
-	
-	public void setError(final String error) {
-		
-		errors = Arrays.asList(error);
-	}
-	
 	
 	@Override
 	public final String toString() {
 		
 		final StringBuilder builder = new StringBuilder();
-		builder.append("ApiExceptionMessage [status = ").append(status)
-		       .append(", message = ").append(message)
-		       .append("developerMessage: ").append(developerMessage)
-		       .append(errors)
-		       .append("]");
+		builder.append("ApiError [timestamp = ").append(timestamp)
+		       .append(", status = '").append(status)
+		       .append(", message = '").append(message)
+		       .append("', path = '").append(path)
+		       .append("']");
 		
 		return builder.toString();
 	}
