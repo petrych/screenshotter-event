@@ -1,5 +1,6 @@
 package com.petrych.screenshotter.common.errorhandling;
 
+import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.service.UrlUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -38,24 +39,38 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			httpStatus = HttpStatus.BAD_GATEWAY;
 		}
 		
-		ApiError apiError = new ApiError(httpStatus.value(), ex.toString(), request.getRequestURI());
+		ApiError apiError = new ApiError(httpStatus.value(), ex.getMessage(), request.getRequestURI());
 		
-		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 		LOG.error(apiError.toString());
+		LOG.debug("", ex);
 		
-		return responseEntity;
+		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 	}
 	
 	@ExceptionHandler(FileNotFoundException.class)
 	public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex, HttpServletRequest request) {
 		
 		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-		ApiError apiError = new ApiError(httpStatus.value(), ex.getMessage(), request.getRequestURI());
+		String errorMessage = removeStoragePathFromErrorMessage(ex.getMessage());
+		ApiError apiError = new ApiError(httpStatus.value(), errorMessage, request.getRequestURI());
 		
-		ResponseEntity<Object> responseEntity = new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 		LOG.error(apiError.toString());
+		LOG.error("", ex);
 		
-		return responseEntity;
+		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
+	}
+	
+	private String removeStoragePathFromErrorMessage(String errorMessage) {
+		
+		final String openingMessage = "File does not exist";
+		final int beginIndex = 0;
+		final int endIndex = openingMessage.length();
+		
+		if (errorMessage.startsWith(openingMessage) == errorMessage.endsWith(FileUtil.IMAGE_FORMAT_NAME)) {
+			return errorMessage.substring(beginIndex, endIndex);
+		} else {
+			return errorMessage;
+		}
 	}
 	
 }

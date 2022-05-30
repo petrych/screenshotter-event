@@ -56,7 +56,7 @@ public class ApiError {
 		
 		final StringBuilder builder = new StringBuilder();
 		builder.append("ApiError [dateTime = ").append(dateTimeUTC)
-		       .append(", status = '").append(status)
+		       .append(", status = ").append(status)
 		       .append(", message = '").append(message)
 		       .append("', path = '").append(path)
 		       .append("']");
