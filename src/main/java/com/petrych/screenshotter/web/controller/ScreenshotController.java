@@ -71,9 +71,11 @@ public class ScreenshotController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void store(@RequestBody String urlString) throws IOException {
+	public ScreenshotDto store(@RequestBody String urlString) throws IOException {
 		
-		screenshotService.storeScreenshot(urlString);
+		Screenshot screenshot = screenshotService.storeScreenshot(urlString);
+		
+		return convertToDto(screenshot);
 	}
 	
 	// update
