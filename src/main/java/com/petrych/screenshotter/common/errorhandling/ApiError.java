@@ -1,10 +1,11 @@
 package com.petrych.screenshotter.common.errorhandling;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class ApiError {
 	
-	private LocalDateTime timestamp;
+	private LocalDateTime dateTimeUTC;
 	
 	private int status;
 	
@@ -14,7 +15,7 @@ public class ApiError {
 	
 	public ApiError(final int httpStatusCode, final String message, final String path) {
 		
-		this.timestamp = LocalDateTime.now();
+		this.dateTimeUTC = LocalDateTime.now(ZoneOffset.UTC);
 		this.status = httpStatusCode;
 		this.message = message;
 		this.path = path;
@@ -54,7 +55,7 @@ public class ApiError {
 	public final String toString() {
 		
 		final StringBuilder builder = new StringBuilder();
-		builder.append("ApiError [timestamp = ").append(timestamp)
+		builder.append("ApiError [dateTime = ").append(dateTimeUTC)
 		       .append(", status = '").append(status)
 		       .append(", message = '").append(message)
 		       .append("', path = '").append(path)

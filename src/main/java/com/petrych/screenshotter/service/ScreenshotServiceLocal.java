@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -140,7 +141,7 @@ public class ScreenshotServiceLocal implements IScreenshotService {
 			
 			Screenshot screenshot = ((ArrayList<Screenshot>) screenshotRepo
 					.findByNameContaining(pair.getLeft())).get(0);
-			screenshot.setDateTimeCreated(LocalDateTime.now());
+			screenshot.setDateTimeCreated(LocalDateTime.now(ZoneOffset.UTC));
 			
 			screenshotRepo.save(screenshot);
 			LOG.debug("Updated screenshot: {}", screenshot);

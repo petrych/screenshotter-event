@@ -2,6 +2,7 @@ package com.petrych.screenshotter.persistence.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 @Entity
@@ -24,7 +25,7 @@ public class Screenshot {
 	public Screenshot(String name, String fileName) {
 		
 		this.name = name;
-		this.dateTimeCreated = LocalDateTime.now();
+		this.dateTimeCreated = LocalDateTime.now(ZoneOffset.UTC);
 		this.fileName = fileName;
 	}
 	

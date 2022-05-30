@@ -1,6 +1,7 @@
 package com.petrych.screenshotter.web.dto;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class ScreenshotDto {
 	
@@ -21,7 +22,7 @@ public class ScreenshotDto {
 		this(id,
 		     name,
 		     uri,
-		     LocalDateTime.now());
+		     LocalDateTime.now(ZoneOffset.UTC));
 	}
 	
 	public ScreenshotDto(Long id, String name, String uri, LocalDateTime dateTimeCreated) {
