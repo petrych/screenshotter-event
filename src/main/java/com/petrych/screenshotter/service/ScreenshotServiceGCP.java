@@ -29,12 +29,6 @@ class ScreenshotServiceGCP extends AbstractScreenshotService implements IScreens
 	
 	private String bucketName;
 	
-	@Autowired
-	private IScreenshotRepository screenshotRepo;
-	
-	@Autowired
-	private IStorageProperties properties;
-	
 	public ScreenshotServiceGCP(IScreenshotRepository screenshotRepo, IStorageProperties properties) {
 		
 		super(screenshotRepo, properties);
@@ -70,7 +64,7 @@ class ScreenshotServiceGCP extends AbstractScreenshotService implements IScreens
 	// helper methods
 	
 	@Override
-	protected void deleteFile(String fileName) {
+	protected void deleteScreenshotFile(String fileName) {
 		
 		storage.delete(bucketName, fileName);
 	}

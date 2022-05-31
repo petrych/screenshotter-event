@@ -69,7 +69,7 @@ public class ScreenshotServiceLocal extends AbstractScreenshotService implements
 	// helper methods
 	
 	@Override
-	protected void deleteFile(String fileName) throws IOException {
+	protected void deleteScreenshotFile(String fileName) throws IOException {
 		
 		File fileToDelete = FileUtils.getFile(getFilePathString(fileName));
 		FileUtils.forceDelete(fileToDelete);

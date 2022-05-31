@@ -150,7 +150,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 				Screenshot screenshot = screenshotRepo.findByFileName(fileName);
 				
 				if (screenshot != null) {
-					this.deleteFile(fileName);
+					this.deleteScreenshotFile(fileName);
 					screenshotRepo.delete(screenshot);
 					LOG.debug("Removed screenshot: {}", screenshot);
 				}
@@ -159,7 +159,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 		}
 	}
 	
-	protected abstract void deleteFile(String fileName) throws IOException;
+	protected abstract void deleteScreenshotFile(String fileName) throws IOException;
 	
 	protected abstract void saveScreenshotFile(ByteArrayOutputStream baos, String fileName) throws IOException;
 	
