@@ -39,6 +39,8 @@ public class ScreenshotServiceIT {
 	
 	private static final String URL_VALID = "https://www.apple.com/";
 	
+	private static final String URL_VALID_NON_EXISTING = "https://www.gmail.com/";
+	
 	private static final String URL_FOR_EXISTING_SCREENSHOT = "https://www.drive.google.com/";
 	
 	private static final String URL_UNREACHABLE = "https://www.sdfghy878.qq/";
@@ -165,17 +167,17 @@ public class ScreenshotServiceIT {
 		assertTrue(screenshotBefore.getDateTimeCreated().isBefore(screenshotAfter.getDateTimeCreated()));
 	}
 	
-	//	@Test
+	@Test
 	void givenScreenshotWithUrlNotExists_whenUpdate_thenCreateNewScreenshot() throws IOException {
 		
-		Collection<String> screenshotsBeforeUpd = screenshotService.findScreenshotFileNamesByUrl(URL_VALID);
+		Collection<String> screenshotsBeforeUpd = screenshotService.findScreenshotFileNamesByUrl(URL_VALID_NON_EXISTING);
 		long filesBeforeUpdCount = Iterables.size(screenshotService.findAll());
 		
 		assertTrue(screenshotsBeforeUpd.isEmpty());
 		
-		screenshotService.updateScreenshot(URL_VALID);
+		screenshotService.updateScreenshot(URL_VALID_NON_EXISTING);
 		
-		Collection<String> screenshotsAfterUpd = screenshotService.findScreenshotFileNamesByUrl(URL_VALID);
+		Collection<String> screenshotsAfterUpd = screenshotService.findScreenshotFileNamesByUrl(URL_VALID_NON_EXISTING);
 		long filesAfterUpdCount = Iterables.size(screenshotService.findAll());
 		
 		assertFalse(screenshotsAfterUpd.isEmpty());
@@ -208,19 +210,20 @@ public class ScreenshotServiceIT {
 		assertTrue(actualMessage.contains(UrlUtil.URL_IS_TOO_LONG_MESSAGE));
 	}
 	
-	//	@Test
+	@Test
 	void givenScreenshotExists_whenDelete_thenSuccess() throws IOException {
 		
-		Screenshot screenshot = screenshotService.storeScreenshot(URL_VALID);
+		String url = "https://meet.google.com";
+		Screenshot screenshot = screenshotService.storeScreenshot(url);
 		String fileName = screenshot.getFileName();
 		Path filePath = Paths.get(storageDir, fileName);
 		
-		assertFalse(screenshotService.findScreenshotFileNamesByUrl(URL_VALID).isEmpty());
+		assertFalse(screenshotService.findScreenshotFileNamesByUrl(url).isEmpty());
 		assertTrue(Files.exists(filePath));
 		
-		screenshotService.deleteScreenshot(URL_VALID);
+		screenshotService.deleteScreenshot(url);
 		
-		assertTrue(screenshotService.findScreenshotFileNamesByUrl(URL_VALID).isEmpty());
+		assertTrue(screenshotService.findScreenshotFileNamesByUrl(url).isEmpty());
 		assertTrue(Files.notExists(filePath));
 	}
 	
