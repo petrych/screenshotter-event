@@ -66,6 +66,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		final int beginIndex = 0;
 		final int endIndex = openingMessage.length();
 		
+		if (errorMessage == null) {
+			return openingMessage;
+		}
+		
 		if (errorMessage.startsWith(openingMessage) && errorMessage.endsWith(FileUtil.IMAGE_FORMAT_NAME)) {
 			return errorMessage.substring(beginIndex, endIndex);
 		} else {
