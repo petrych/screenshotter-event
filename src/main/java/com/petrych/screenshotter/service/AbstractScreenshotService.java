@@ -4,7 +4,6 @@ import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.config.IStorageProperties;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,29 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 	@Override
 	public byte[] getScreenshotFileById(Long id) throws IOException {
 		
-		throw new NotImplementedException();
+		Optional<Screenshot> screenshotEntity = screenshotRepo.findById(id);
+		
+		if (screenshotEntity.isPresent()) {
+			String fileName = screenshotEntity.get().getFileName();
+			
+			if (screenshotFileExists(fileName)) {
+				return readScreenshotFileContent(fileName);
+			} else {
+				String messageForClients = String.format(
+						"Screenshot file not found for screenshot id=%d", id);
+				String messageForInternalUse = String.format(
+						"%s and name='%s' in storage location '%s'.", messageForClients, fileName,
+						properties.getStorageDir());
+				LOG.debug(messageForInternalUse);
+				
+				throw new FileNotFoundException(messageForClients);
+			}
+		} else {
+			String message = String.format("Screenshot not found with id=%d", id);
+			LOG.debug(message);
+			
+			throw new FileNotFoundException(message);
+		}
 	}
 	
 	@Override
@@ -164,5 +185,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 	protected abstract void saveScreenshotFile(ByteArrayOutputStream baos, String fileName) throws IOException;
 	
 	protected abstract boolean screenshotFileExists(String fileName);
+	
+	protected abstract byte[] readScreenshotFileContent(String fileName) throws IOException;
 	
 }
