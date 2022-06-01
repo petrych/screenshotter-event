@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 
 @Service
 @Profile({"local", "test"})
-public class ScreenshotServiceLocal extends AbstractScreenshotService implements IScreenshotService {
+public class ScreenshotServiceLocal extends AbstractScreenshotService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotServiceLocal.class);
 	
