@@ -53,8 +53,7 @@ public class ScreenshotServiceLocal extends AbstractScreenshotService {
 			FileUtils.writeByteArrayToFile(file, baos.toByteArray());
 			LOG.debug("Screenshot file written successfully to path {}.", filePathString);
 		} catch (IOException e) {
-			String message = String.format("Could not write a file '%s'", filePathString);
-			throw new StorageException(message, e);
+			throw new StorageException(e);
 		}
 	}
 	

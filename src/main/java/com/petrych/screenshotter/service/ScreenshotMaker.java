@@ -37,7 +37,7 @@ public class ScreenshotMaker {
 			ImageIO.write(screenshotFile.getImage(), IMAGE_FORMAT_NAME, baos);
 			LOG.debug("Creating a screenshotFile (3/3): Screenshot file written successfully.");
 		} catch (IOException e) {
-			throw new StorageException("Could not write a file.", e);
+			throw new StorageException(e);
 		} finally {
 			driver.quit();
 		}
