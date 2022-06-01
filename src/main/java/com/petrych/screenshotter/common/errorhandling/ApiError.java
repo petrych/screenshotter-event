@@ -5,49 +5,19 @@ import java.time.ZoneOffset;
 
 public class ApiError {
 	
-	private LocalDateTime dateTimeUTC;
+	public LocalDateTime dateTimeUTC;
 	
-	private int status;
+	public int status;
 	
-	private String message;
+	public String message;
 	
-	private String path;
+	public String path;
 	
-	public ApiError(final int httpStatusCode, final String message, final String path) {
+	public ApiError(int httpStatusCode, String message, String path) {
 		
 		this.dateTimeUTC = LocalDateTime.now(ZoneOffset.UTC);
 		this.status = httpStatusCode;
 		this.message = message;
-		this.path = path;
-	}
-	
-	public int getStatus() {
-		
-		return status;
-	}
-	
-	public void setStatus(final int status) {
-		
-		this.status = status;
-	}
-	
-	public String getMessage() {
-		
-		return message;
-	}
-	
-	public void setMessage(final String message) {
-		
-		this.message = message;
-	}
-	
-	public String getPath() {
-		
-		return path;
-	}
-	
-	public void setPath(final String path) {
-		
 		this.path = path;
 	}
 	
