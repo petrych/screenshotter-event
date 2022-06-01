@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.util.CollectionUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -158,6 +159,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 	}
 	
 	@Override
+	@Transactional(rollbackFor = {IOException.class, RuntimeException.class})
 	public void deleteScreenshot(String urlString) throws IOException {
 		
 		UrlUtil.isUrlValid(urlString);

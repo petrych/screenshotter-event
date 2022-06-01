@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,8 +36,12 @@ public class ScreenshotServiceLocal extends AbstractScreenshotService implements
 	@Override
 	protected void deleteScreenshotFile(String fileName) throws IOException {
 		
-		File fileToDelete = FileUtils.getFile(getFilePathString(fileName));
-		FileUtils.forceDelete(fileToDelete);
+		try {
+			File fileToDelete = FileUtils.getFile(getFilePathString(fileName));
+			FileUtils.forceDelete(fileToDelete);
+		} catch (FileNotFoundException ex) {
+			LOG.debug("Fail deleting a screenshot file. " + ex.getMessage());
+		}
 	}
 	
 	@Override
