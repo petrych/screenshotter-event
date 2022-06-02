@@ -81,6 +81,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 	}
 	
 	@Override
+	@Transactional(rollbackFor = {IOException.class, RuntimeException.class})
 	public Screenshot storeScreenshot(String urlString) throws IOException {
 		
 		UrlUtil.isUrlValid(urlString);
@@ -104,6 +105,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 	}
 	
 	@Override
+	@Transactional(rollbackFor = {IOException.class, RuntimeException.class})
 	public void updateScreenshot(String urlString) throws IOException {
 		
 		Collection<String> fileNameToSearchFor = findScreenshotFileNamesByUrl(urlString);
@@ -126,7 +128,9 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 					.findByNameContaining(pair.getLeft())).get(0);
 			screenshot.setDateTimeCreated(LocalDateTime.now(ZoneOffset.UTC));
 			
+			saveScreenshotFile(pair.getRight(), screenshot.getFileName());
 			screenshotRepo.save(screenshot);
+			
 			LOG.debug("Updated screenshot: {}", screenshot.toLogString());
 		}
 	}
