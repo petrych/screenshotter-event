@@ -2,7 +2,7 @@ package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.common.FileUtil;
 import com.petrych.screenshotter.config.IStorageProperties;
-import com.petrych.screenshotter.persistence.StorageException;
+import com.petrych.screenshotter.common.errorhandling.StorageException;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

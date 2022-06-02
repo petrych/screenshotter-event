@@ -1,6 +1,6 @@
 package com.petrych.screenshotter.service;
 
-import com.petrych.screenshotter.persistence.StorageException;
+import com.petrych.screenshotter.common.errorhandling.StorageException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;

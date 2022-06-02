@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Objects;
@@ -42,36 +43,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ApiError apiError = new ApiError(httpStatus.value(), ex.getMessage(), request.getRequestURI());
 		
 		LOG.error(apiError.toString());
-		LOG.debug("", ex);
 		
 		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 	}
 	
 	@ExceptionHandler(FileNotFoundException.class)
-	public ResponseEntity<Object> handleFileNotFoundException(FileNotFoundException ex, HttpServletRequest request) {
+	public ResponseEntity<Object> handleScreenshotFileNotFoundException(FileNotFoundException ex,
+	                                                                    HttpServletRequest request) {
 		
 		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 		String errorMessage = removeStoragePathFromErrorMessage(ex.getMessage());
 		ApiError apiError = new ApiError(httpStatus.value(), errorMessage, request.getRequestURI());
 		
-		LOG.error(apiError.toString());
-		LOG.error("", ex);
+		LOG.warn(apiError.toString());
 		
 		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 	}
 	
 	private String removeStoragePathFromErrorMessage(String errorMessage) {
 		
-		final String openingMessage = "File does not exist";
-		final int beginIndex = 0;
-		final int endIndex = openingMessage.length();
-		
-		if (errorMessage == null) {
-			return openingMessage;
+		if (errorMessage == null || errorMessage.isEmpty()) {
+			return ScreenshotFileNotFoundException.DEFAULT_MESSAGE;
 		}
 		
-		if (errorMessage.startsWith(openingMessage) && errorMessage.endsWith(FileUtil.IMAGE_FORMAT_NAME)) {
-			return errorMessage.substring(beginIndex, endIndex);
+		if (errorMessage.endsWith(FileUtil.IMAGE_FORMAT_NAME)) {
+			int separatorCharFirstIndex = errorMessage.indexOf(File.separatorChar);
+			return errorMessage.substring(0, separatorCharFirstIndex);
 		} else {
 			return errorMessage;
 		}

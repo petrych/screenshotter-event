@@ -1,6 +1,8 @@
 package com.petrych.screenshotter.service;
 
 import com.petrych.screenshotter.common.FileUtil;
+import com.petrych.screenshotter.common.errorhandling.ScreenshotEntityNotFoundException;
+import com.petrych.screenshotter.common.errorhandling.ScreenshotFileNotFoundException;
 import com.petrych.screenshotter.config.IStorageProperties;
 import com.petrych.screenshotter.persistence.model.Screenshot;
 import com.petrych.screenshotter.persistence.repository.IScreenshotRepository;
@@ -12,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.util.CollectionUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
@@ -66,20 +67,16 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 			if (screenshotFileExists(fileName)) {
 				return readScreenshotFileContent(fileName);
 			} else {
-				String messageForClients = String.format(
-						"Screenshot file not found for screenshot id=%d", id);
-				String messageForInternalUse = String.format(
-						"%s and name='%s' in storage location '%s'.", messageForClients, fileName,
-						properties.getStorageDir());
-				LOG.debug(messageForInternalUse);
+				String message = String.format(
+						"Screenshot file not found for screenshot id=%d and name='%s' in storage location '%s'",
+						id, fileName, properties.getStorageDir());
+				LOG.debug(message);
 				
-				throw new FileNotFoundException(messageForClients);
+				throw new ScreenshotFileNotFoundException(id);
 			}
 		} else {
-			String message = String.format("Screenshot not found with id=%d", id);
-			LOG.debug(message);
 			
-			throw new FileNotFoundException(message);
+			throw new ScreenshotEntityNotFoundException(id);
 		}
 	}
 	
@@ -167,7 +164,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 		Collection<String> fileNamesToSearchFor = findScreenshotFileNamesByUrl(urlString);
 		
 		if (fileNamesToSearchFor.isEmpty()) {
-			throw new FileNotFoundException();
+			throw new ScreenshotFileNotFoundException();
 		} else {
 			for (String fileName : fileNamesToSearchFor) {
 				Screenshot screenshot = screenshotRepo.findByFileName(fileName);
