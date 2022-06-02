@@ -40,7 +40,7 @@ public class ScreenshotServiceLocal extends AbstractScreenshotService {
 			File fileToDelete = FileUtils.getFile(getFilePathString(fileName));
 			FileUtils.forceDelete(fileToDelete);
 		} catch (FileNotFoundException ex) {
-			LOG.debug("Fail deleting a screenshot file. " + ex.getMessage());
+			LOG.warn("Fail deleting a screenshot file. " + ex.getMessage());
 		}
 	}
 	

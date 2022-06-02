@@ -70,7 +70,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 				String message = String.format(
 						"Screenshot file not found for screenshot id=%d and name='%s' in storage location '%s'",
 						id, fileName, properties.getStorageDir());
-				LOG.debug(message);
+				LOG.warn(message);
 				
 				throw new ScreenshotFileNotFoundException(id);
 			}

@@ -42,7 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		ApiError apiError = new ApiError(httpStatus.value(), ex.getMessage(), request.getRequestURI());
 		
-		LOG.error(apiError.toString());
+		LOG.warn(apiError.toString());
 		
 		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 	}

@@ -26,8 +26,6 @@ import java.util.List;
 @RequestMapping(value = "/screenshots")
 public class ScreenshotController {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ScreenshotController.class);
-	
 	@Autowired
 	private IScreenshotService screenshotService;
 	
@@ -44,7 +42,6 @@ public class ScreenshotController {
 		Iterable<Screenshot> allScreenshots = screenshotService.findAll();
 		List<ScreenshotDto> screenshotDtos = new ArrayList<>();
 		allScreenshots.forEach(p -> screenshotDtos.add(convertToDto(p)));
-		LOG.debug("Screenshots total: {}", screenshotDtos.size());
 		
 		return screenshotDtos;
 	}
