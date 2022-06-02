@@ -28,7 +28,7 @@ public class ScreenshotServiceLocal extends AbstractScreenshotService {
 	public ScreenshotServiceLocal(IScreenshotRepository screenshotRepo, IStorageProperties properties) {
 		
 		super(screenshotRepo, properties);
-		this.storageLocation = Paths.get(properties.getStorageDir()).toAbsolutePath().toString();
+		this.storageLocation = properties.getStorageDirAbsolutePath().toString();
 	}
 	
 	// helper methods
