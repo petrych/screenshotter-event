@@ -114,7 +114,17 @@ public class Screenshot {
 		return "Screenshot [" +
 				"id=" + id +
 				", name='" + name +
-				", dateTimeCreated=" + dateTimeCreated +
+				"', dateTimeCreated=" + dateTimeCreated +
+				']';
+	}
+	
+	public String toLogString() {
+		
+		return "Screenshot [" +
+				"id=" + id +
+				", name='" + name +
+				"', fileName='" + fileName +
+				"', dateTimeCreated=" + dateTimeCreated +
 				']';
 	}
 	

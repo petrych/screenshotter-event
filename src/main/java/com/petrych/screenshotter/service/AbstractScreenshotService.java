@@ -98,7 +98,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 		saveScreenshotFile(pair.getRight(), fileName);
 		screenshotRepo.save(screenshot);
 		
-		LOG.debug("Stored screenshot: {}", screenshot);
+		LOG.debug("Stored screenshot: {}", screenshot.toLogString());
 		
 		return screenshot;
 	}
@@ -127,7 +127,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 			screenshot.setDateTimeCreated(LocalDateTime.now(ZoneOffset.UTC));
 			
 			screenshotRepo.save(screenshot);
-			LOG.debug("Updated screenshot: {}", screenshot);
+			LOG.debug("Updated screenshot: {}", screenshot.toLogString());
 		}
 	}
 	
@@ -172,7 +172,7 @@ public abstract class AbstractScreenshotService implements IScreenshotService {
 				if (screenshot != null) {
 					this.deleteScreenshotFile(fileName);
 					screenshotRepo.delete(screenshot);
-					LOG.debug("Removed screenshot: {}", screenshot);
+					LOG.debug("Removed screenshot: {}", screenshot.toLogString());
 				}
 			}
 			
