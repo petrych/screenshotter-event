@@ -60,8 +60,8 @@ class WebDriverManager {
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--no-sandbox"); // Bypass OS security model
 		options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-		options.addArguments("--headless");
-		options.addArguments("--start-maximized");
+//		options.addArguments("--headless"); // disabled because of NoSuchElementException for 'Not now' [Instagram] button
+		options.addArguments("--window-size=1020,1000");
 		options.addArguments("--disable-infobars");
 		options.addArguments("--disable-extensions");
 		options.addArguments("--verbose");
