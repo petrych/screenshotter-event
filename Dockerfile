@@ -57,6 +57,6 @@ RUN unzip chromedriver_linux64.zip \
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=gcp", "-jar","/screenshotter.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=local", "-jar","/screenshotter.jar"]
 
 CMD '/bootstrap.sh'
