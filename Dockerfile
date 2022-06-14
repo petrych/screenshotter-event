@@ -24,6 +24,10 @@ RUN mkdir -p /home/apps && chown apps:apps /home/apps
 
 # Install the needed components
 RUN apt-get install -y \
+            libnss3-dev \
+            libgdk-pixbuf2.0-dev \
+            libgtk-3-dev \
+            libxss-dev \
             x11vnc \
             xvfb \
             fluxbox \
@@ -36,23 +40,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 # Install Chrome
 RUN apt-get update && apt-get -y install google-chrome-stable
-
-# Download matching Chrome Driver
-# https://stackoverflow.com/a/61928952/167920
-RUN chromeVersion=$(google-chrome --product-version) \
-    && chromeMajorVersion=${chromeVersion%%.*} \
-    && latestDriverReleaseURL=https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$chromeMajorVersion \
-    && wget $latestDriverReleaseURL \
-    && latestDriverVersionFileName="LATEST_RELEASE_"$chromeMajorVersion \
-    && latestFullDriverVersion=$(cat $latestDriverVersionFileName) \
-    && rm $latestDriverVersionFileName \
-    && finalURL="http://chromedriver.storage.googleapis.com/"$latestFullDriverVersion"/chromedriver_linux64.zip" \
-    && wget $finalURL
-
-# Unzip the Chrome Driver executable and move it to the desired folder
-RUN unzip chromedriver_linux64.zip \
-    && rm chromedriver_linux64.zip \
-    && mv chromedriver /usr/bin/
 
 EXPOSE 8080
 
