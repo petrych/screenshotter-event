@@ -8,7 +8,6 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 COPY src ./src
 COPY test-images ./test-images
-COPY tools ./tools
 COPY bootstrap.sh /
 
 RUN ./mvnw clean package
