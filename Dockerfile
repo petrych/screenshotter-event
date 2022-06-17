@@ -8,7 +8,6 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 COPY src ./src
 COPY test-images ./test-images
-COPY bootstrap.sh /
 
 RUN ./mvnw clean package
 
@@ -45,4 +44,3 @@ EXPOSE 8080
 
 ENTRYPOINT ["java", "-Dspring.profiles.active=local", "-jar","/screenshotter.jar"]
 
-CMD '/bootstrap.sh'
