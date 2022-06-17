@@ -3,22 +3,17 @@ A RESTful webservice that creates screenshots of web pages and stores them in th
 
 #### Technology stack
 
-- Java 15
+- Java 11
 - Maven 3
 - Spring 5
 - Spring Boot 2
+- Google Cloud Platform
 - JPA, Hibernate
 - MySQL 8
 - Selenium
-- Chrome Driver executable (*)
 - JUnit 5
 - Spring WebTestClient
 
-(*) The version of Chrome Driver must correspond to the Chrome browser installed.
-chromedriver executable needs to be in the /tools directory.
-Download from https://sites.google.com/chromium.org/driver/downloads.
-
-Application is shipped with Chrome Driver for Mac.
 
 ### IMPORTANT
 
