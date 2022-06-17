@@ -3,6 +3,7 @@ package com.petrych.screenshotter.service;
 import com.petrych.screenshotter.common.errorhandling.StorageException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -70,51 +71,59 @@ public class ScreenshotMaker {
 		return Pair.of(screenshotName, baos);
 	}
 	
-	private static WebElement getImageElementForSavedMediaPageOnInstagram(WebDriver driver,
-	                                                                      String instagramUsername,
-	                                                                      String instagramPassword) {
+	private static WebDriver getImageElementForSavedMediaPageOnInstagram(WebDriver driver,
+	                                                                     String instagramUsername,
+	                                                                     String instagramPassword) {
 		
 		if (instagramUsername == null || instagramUsername.isEmpty() ||
 				instagramPassword == null || instagramPassword.isEmpty()) {
 			LOG.error("Creating a screenshotFile failed. Instagram username and/or password are not set");
 		}
 		
-		WebDriverWait wait = new WebDriverWait(driver, 20);
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 20);
+			
+			// 'Allow all cookies' button
+			
+			wait.until(elementToBeClickable(By.xpath("//button[text()='Allow essential and optional cookies']")))
+			    .click();
+			
+			// Username and password
+			
+			wait.until(elementToBeClickable(By.name("username")))
+			    .sendKeys(instagramUsername);
+			wait.until(elementToBeClickable(By.name("password")))
+			    .sendKeys(instagramPassword);
+			
+			// 'Log In' button
+			
+			String loginButtonXPath = "//div[text()='Log In']";
+			wait.until(elementToBeClickable(By.xpath(loginButtonXPath)))
+			    .submit();
+			
+			// 'Not Now' button
+			
+			String notNowButtonXPath = "//button[text()='Not now']";
+			wait.until(presenceOfElementLocated(By.xpath(notNowButtonXPath)));
+			wait.until(elementToBeClickable(By.xpath(notNowButtonXPath)))
+			    .click();
+			
+			// Image
+			
+			String imageXPath = "//img[contains(@src,\"instagram\")]";
+			wait.until(presenceOfElementLocated(By.xpath(imageXPath)));
+			
+			WebElement image = driver.findElement(By.xpath(imageXPath));
+			wait.until(visibilityOf(image));
+			
+		} catch (TimeoutException ex) {
+			String message = String.format(
+					"Instagram: Selenium TimeoutException encountered. %s. Proceeding to making a screenshot...",
+					ex.getMessage());
+			LOG.debug(message);
+		}
 		
-		// 'Allow all cookies' button
-		
-		wait.until(elementToBeClickable(By.xpath("//button[text()='Allow essential and optional cookies']")))
-		    .click();
-		
-		// Username and password
-		
-		wait.until(elementToBeClickable(By.name("username")))
-		    .sendKeys(instagramUsername);
-		wait.until(elementToBeClickable(By.name("password")))
-		    .sendKeys(instagramPassword);
-		
-		// 'Log In' button
-		
-		String loginButtonXPath = "//div[text()='Log In']";
-		wait.until(elementToBeClickable(By.xpath(loginButtonXPath)))
-		    .submit();
-		
-		// 'Not Now' button
-		
-		String notNowButtonXPath = "//button[text()='Not now']";
-		wait.until(presenceOfElementLocated(By.xpath(notNowButtonXPath)));
-		wait.until(elementToBeClickable(By.xpath(notNowButtonXPath)))
-		    .click();
-		
-		// Image
-		
-		String imageXPath = "//img[contains(@src,\"instagram\")]";
-		wait.until(presenceOfElementLocated(By.xpath(imageXPath)));
-		
-		WebElement image = driver.findElement(By.xpath(imageXPath));
-		wait.until(visibilityOf(image));
-		
-		return image;
+		return driver;
 	}
 	
 }
