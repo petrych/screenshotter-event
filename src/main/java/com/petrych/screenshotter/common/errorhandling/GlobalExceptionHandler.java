@@ -47,9 +47,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(apiError, Objects.requireNonNull(httpStatus));
 	}
 	
-	@ExceptionHandler(FileNotFoundException.class)
-	public ResponseEntity<Object> handleScreenshotFileNotFoundException(FileNotFoundException ex,
-	                                                                    HttpServletRequest request) {
+	@ExceptionHandler({FileNotFoundException.class, ScreenshotEntityNotFoundException.class})
+	public ResponseEntity<Object> handleScreenshotFileNotFoundException(Exception ex, HttpServletRequest request) {
 		
 		HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 		String errorMessage = removeStoragePathFromErrorMessage(ex.getMessage());
