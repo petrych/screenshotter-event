@@ -228,7 +228,7 @@ public class ScreenshotServiceIT {
 	}
 	
 	@Test
-	void givenFileNotExists_whenDelete_thenFileNotFoundException() throws IOException {
+	void givenFileNotExists_whenDelete_thenNoException() throws IOException {
 		
 		Screenshot screenshot = screenshotService.storeScreenshot(URL_VALID);
 		String fileName = screenshot.getFileName();
@@ -236,7 +236,7 @@ public class ScreenshotServiceIT {
 		
 		FileUtils.forceDelete(filePath.toFile());
 		
-		assertThrows(IOException.class, () -> {
+		assertDoesNotThrow( () -> {
 			screenshotService.deleteScreenshot(URL_VALID);
 		});
 	}
